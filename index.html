@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Orb | Official Website</title>
+<meta name="description" content="orb — Collect, battle, and conquer in the ultimate trading card game. Build your deck, fight AI bots, and climb the ranks.">
+<meta property="og:title" content="orb | Official Website">
+<meta property="og:description" content="Collect, battle, and conquer in the ultimate trading card game. Build your deck, fight AI bots, and climb the ranks.">
+<meta property="og:image" content="orb_Logo.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="orb | Official Website">
+<meta name="twitter:description" content="Collect, battle, and conquer in the ultimate trading card game.">
+<link rel="icon" type="image/png" href="assets/orb-Logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+<canvas id="idle-canvas"></canvas>
+<div id="levelup-overlay"><div class="levelup-text" id="levelup-text">LEVEL UP!</div></div>
+<div id="achievement-container"></div>
+<div id="pack-flash"></div>
+
+<div id="achieve-panel">
+    <div class="ap-header"><h2>ACHIEVEMENTS</h2><button class="ap-close" onclick="toggleAchievePanel()" aria-label="Close achievements panel">✕</button></div>
+    <div class="ap-body" id="ap-body"></div>
+</div>
+
+<div id="news-overlay" role="dialog" aria-modal="true" aria-label="News article">
+    <div class="article-container glass-panel">
+        <button class="close-news-btn" onclick="closeNews()">← BACK</button>
+        <div id="news-content-box"></div>
+    </div>
+</div>
+
+<!-- HOW IT WORKS FULLSCREEN OVERLAY -->
+<div id="hiw-overlay" onclick="closeHIWOverlay()" role="dialog" aria-modal="true" aria-label="How it works">
+    <div class="hiw-modal glass-panel" onclick="event.stopPropagation()">
+        <button class="hiw-close-btn" onclick="closeHIWOverlay()" aria-label="Close">✕</button>
+
+        <div class="hiw-modal-head">
+            <h2>How It Works</h2>
+            <p>Everything you need to start winning.</p>
+        </div>
+
+        <div class="hiw-slider-nav" id="hiw-slider-nav">
+            <button class="hiw-snav-btn active" onclick="hiwScrollTo('overview')">OVERVIEW</button>
+            <button class="hiw-snav-btn" onclick="hiwScrollTo('rules')">RULES</button>
+            <button class="hiw-snav-btn" onclick="hiwScrollTo('collect')">COLLECT &amp; PROGRESS</button>
+            <div class="hiw-snav-thumb" id="hiw-snav-thumb"></div>
+        </div>
+
+        <div class="hiw-modal-body" id="hiw-modal-body">
+
+            <!-- OVERVIEW -->
+            <div class="hiw-scroll-section" id="hiw-sec-overview">
+                <h3 class="hiw-sec-header">OVERVIEW</h3>
+                <div class="hiw-vgrid">
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">⚔️</div>
+                        <div class="hiw-vcard-title">Core Battle Loop</div>
+                        <div class="hiw-vcard-desc">Each round: draw → pick a card → choose Attack or Defense → reveal → winner takes the round.</div>
+                    </div>
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">🃏</div>
+                        <div class="hiw-vcard-title">Deck Building</div>
+                        <div class="hiw-vcard-desc">1–9 cards per deck. Build around synergies. No card can be used twice in a row — manage cooldowns.</div>
+                    </div>
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">🎮</div>
+                        <div class="hiw-vcard-title">Game Modes</div>
+                        <div class="hiw-vcard-desc">Normal battles, Draft mode (pick from a pool), and Gauntlet (endless escalating stages).</div>
+                    </div>
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">📈</div>
+                        <div class="hiw-vcard-title">Progression</div>
+                        <div class="hiw-vcard-desc">Earn XP to level up. Gold funds new packs. Win cards from battles. Daily rewards keep you growing.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RULES -->
+            <div class="hiw-scroll-section" id="hiw-sec-rules">
+                <h3 class="hiw-sec-header">LEARN ALL THE RULES</h3>
+
+                <div class="hiw-rule-block">
+                    <div class="hiw-rule-label">🃏 DECK RULES</div>
+                    <div class="hiw-rule-pills">
+                        <div class="hiw-pill">1 to 9 cards max</div>
+                        <div class="hiw-pill">No reuse back-to-back</div>
+                        <div class="hiw-pill">2-turn cooldown per card</div>
+                    </div>
+                </div>
+
+                <div class="hiw-rule-block" style="margin-top:22px;">
+                    <div class="hiw-rule-label">⚔️ BATTLE FLOW</div>
+                    <div class="hiw-flow">
+                        <div class="hiw-flow-step"><span class="hiw-flow-dot">1</span><span>Draw 2 cards from your pile</span></div>
+                        <div class="hiw-flow-step"><span class="hiw-flow-dot">2</span><span>Select 1 card to play</span></div>
+                        <div class="hiw-flow-step"><span class="hiw-flow-dot">3</span><span>Choose <strong>Attack</strong> (DMG) or <strong>Defense</strong> (HP)</span></div>
+                        <div class="hiw-flow-step"><span class="hiw-flow-dot">4</span><span>Bot picks its card and stat</span></div>
+                        <div class="hiw-flow-step"><span class="hiw-flow-dot">5</span><span>Both revealed — higher value wins the round</span></div>
+                        <div class="hiw-flow-step"><span class="hiw-flow-dot">6</span><span>Winner takes the loser's card</span></div>
+                    </div>
+                </div>
+
+                <div class="hiw-rule-block" style="margin-top:22px;">
+                    <div class="hiw-rule-label">💀 DIFFICULTY LEVELS</div>
+                    <div class="hiw-diff-row">
+                        <div class="hiw-diff-pill easy">EASY</div>
+                        <div class="hiw-diff-pill normal">NORMAL</div>
+                        <div class="hiw-diff-pill hard">HARD</div>
+                        <div class="hiw-diff-pill nightmare">NIGHTMARE</div>
+                    </div>
+                </div>
+
+                <div class="hiw-rule-block" style="margin-top:22px;">
+                    <div class="hiw-rule-label">🏆 GAUNTLET MODE</div>
+                    <div class="hiw-vgrid" style="grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+                        <div class="hiw-vcard" style="padding:14px;">
+                            <div class="hiw-vcard-icon" style="font-size:1.4rem;">📈</div>
+                            <div class="hiw-vcard-title" style="font-size:0.78rem;">Escalating stages</div>
+                            <div class="hiw-vcard-desc" style="font-size:0.72rem;">Each stage gets harder</div>
+                        </div>
+                        <div class="hiw-vcard" style="padding:14px;">
+                            <div class="hiw-vcard-icon" style="font-size:1.4rem;">💰</div>
+                            <div class="hiw-vcard-title" style="font-size:0.78rem;">Gold + XP rewards</div>
+                            <div class="hiw-vcard-desc" style="font-size:0.72rem;">No cards dropped</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLLECT & PROGRESS -->
+            <div class="hiw-scroll-section" id="hiw-sec-collect">
+                <h3 class="hiw-sec-header">COLLECT &amp; PROGRESS</h3>
+                <div class="hiw-vgrid">
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">📦</div>
+                        <div class="hiw-vcard-title">Card Collection</div>
+                        <div class="hiw-vcard-desc">Open packs or win cards in battle. Each new card unlocks new strategies.</div>
+                    </div>
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">⭐</div>
+                        <div class="hiw-vcard-title">Rarities</div>
+                        <div class="hiw-vcard-desc">Common, Epic, and Legendary. Higher rarity = stronger stats and holo effects.</div>
+                    </div>
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">🔍</div>
+                        <div class="hiw-vcard-title">Secret Cards</div>
+                        <div class="hiw-vcard-desc">Not all cards are visible. Hidden cards exist and require special conditions to discover.</div>
+                    </div>
+                    <div class="hiw-vcard">
+                        <div class="hiw-vcard-icon">📅</div>
+                        <div class="hiw-vcard-title">Daily Rewards</div>
+                        <div class="hiw-vcard-desc">Come back every day. 7-day streaks unlock an epic pack. Lucky Wheel spins once daily.</div>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:24px;">
+                    <button class="hiw-btn" onclick="closeHIWOverlay();navTo('gallery',document.querySelectorAll('.nav-btn')[1]);">Go to Collection →</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div id="event-modal-overlay" style="display:none;" onclick="closeEventModal()" role="dialog" aria-modal="true" aria-label="Create a Card event">
+    <div class="ev-modal glass-panel" onclick="event.stopPropagation()">
+        <button class="ev-close-btn" onclick="closeEventModal()" aria-label="Close event details">✕</button>
+
+        <div class="ev-modal-head">
+            <div class="h2-live-badge" style="justify-content:center;margin-bottom:12px;">
+                <span class="h2-live-dot"></span>LIVE EVENT
+            </div>
+            <h2 class="ev-modal-title">CREATE-A-CARD EVENT</h2>
+            <p>Unleash your creativity and become part of orb.</p>
+        </div>
+
+        <div class="ev-nav" id="ev-nav">
+            <button class="ev-nav-btn active" onclick="evScrollTo('participate')">HOW TO JOIN</button>
+            <button class="ev-nav-btn" onclick="evScrollTo('art')">ART REQ</button>
+            <button class="ev-nav-btn" onclick="evScrollTo('details')">CARD DETAILS</button>
+            <button class="ev-nav-btn" onclick="evScrollTo('rewards')">REWARDS</button>
+            <button class="ev-nav-btn" onclick="evScrollTo('status')">STATUS</button>
+            <button class="ev-nav-btn" onclick="evScrollTo('why')">WHY JOIN</button>
+            <div class="ev-nav-thumb" id="ev-nav-thumb"></div>
+        </div>
+
+        <div class="ev-modal-body" id="ev-modal-body">
+        
+            <div class="ev-section" id="ev-sec-status" style="background:linear-gradient(135deg,rgba(241,196,15,0.08),rgba(231,76,60,0.06));border-bottom:1px solid rgba(241,196,15,0.15);">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="font-size:2rem;">📮</div>
+        <div>
+            <div style="font-size:0.6rem;font-weight:900;letter-spacing:3px;color:var(--brand-gold);text-transform:uppercase;">Event Status</div>
+            <div style="font-size:1.1rem;font-weight:900;color:#fff;margin:4px 0;">Winners will be revealed soon!</div>
+            <div style="font-size:0.85rem;color:#9ea5bb;line-height:1.6;">Results are being reviewed. Expect an announcement <strong style="color:var(--brand-gold);">2–3 weeks after June 1</strong>.<br>
+            <span style="color:#2ecc71;font-weight:900;">✅ Submissions are still open!</span> You can still send your art — late entries may qualify.</div>
+        </div>
+    </div>
+    <div style="margin-top:14px;text-align:center;">
+        <a class="ev-submit-cta" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission" style="display:inline-flex;gap:8px;align-items:center;">✉ Submit Your Art Now</a>
+    </div>
+</div>
+
+            <div class="ev-section" id="ev-sec-participate">
+                <h3 class="ev-sec-title">✏️ HOW TO PARTICIPATE</h3>
+                <ul class="ev-list">
+                    <li>Design your own original card</li>
+                    <li>Must be a living being (human, animal, mythical, etc.)</li>
+                    <li>🚫 AI-generated art is <strong>NOT</strong> allowed</li>
+                </ul>
+            </div>
+
+            <div class="ev-section" id="ev-sec-art">
+                <h3 class="ev-sec-title">🎨 ART REQUIREMENTS</h3>
+                <ul class="ev-list">
+                    <li>Canvas: <strong>614 × 899 px</strong></li>
+                    <li>Keep artwork clear and centered</li>
+                    <li>Make your design stand out</li>
+                </ul>
+            </div>
+
+            <div class="ev-section" id="ev-sec-details">
+                <h3 class="ev-sec-title">🧠 CARD DETAILS</h3>
+                <ul class="ev-list">
+                    <li>Card Name</li>
+                    <li>Type — Grass / Fire / Water / Air / Phantom / Magic / Plasma</li>
+                    <li>Attack &amp; Defense stats</li>
+                    <li>Special abilities</li>
+                    <li>Optional lore</li>
+                </ul>
+                <div class="ev-tip-box" style="margin-top:12px;">👉 More detail = better chances</div>
+
+                <h3 class="ev-sec-title" style="margin-top:28px;">📩 SUBMISSIONS</h3>
+                <ul class="ev-list">
+                    <li>Unlimited entries allowed</li>
+                    <li>Submit via: <a class="ev-email-link" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission">cards2.0.tcg@gmail.com</a></li>
+                </ul>
+
+                <h3 class="ev-sec-title" style="margin-top:28px;">📅 TIMELINE</h3>
+                <ul class="ev-list">
+                    <li>Starts: <strong>April 1, 2026</strong></li>
+                    <li>Ends: <strong>June 1, 2026</strong></li>
+                    <li>Results: <strong>2–3 weeks after close</strong></li>
+                </ul>
+            </div>
+
+            <div class="ev-section" id="ev-sec-rewards">
+                <h3 class="ev-sec-title">🏆 REWARDS</h3>
+                <div class="ev-rewards-grid">
+                    <div class="ev-reward-card ev-gold">
+                        <div class="ev-reward-place">🥇 1st Place</div>
+                        <ul class="ev-list">
+                            <li>Official in-game card</li>
+                            <li>Original artwork used</li>
+                            <li>Illustrator credit</li>
+                            <li>Type preserved (balanced stats)</li>
+                        </ul>
+                    </div>
+                    <div class="ev-reward-card ev-silver">
+                        <div class="ev-reward-place">🥈 2nd Place</div>
+                        <ul class="ev-list">
+                            <li>Card added to game</li>
+                            <li>Art + type used</li>
+                            <li>Credit given</li>
+                        </ul>
+                    </div>
+                    <div class="ev-reward-card ev-bronze">
+                        <div class="ev-reward-place">🥉 3rd Place</div>
+                        <ul class="ev-list">
+                            <li>Idea becomes a card</li>
+                            <li>Possible Easter egg 👀</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ev-section" id="ev-sec-why">
+                <h3 class="ev-sec-title">💡 WHY JOIN?</h3>
+                <ul class="ev-list">
+                    <li>Get your artwork into a real game</li>
+                    <li>Be credited as an official creator</li>
+                    <li>Share your card with the community</li>
+                    <li>Help shape the future of orb</li>
+                </ul>
+
+                <h3 class="ev-sec-title" style="margin-top:28px;">🎯 WHAT WE'RE LOOKING FOR</h3>
+                <ul class="ev-list">
+                    <li>Creative, original designs</li>
+                    <li>Unique concepts and strong visual identity</li>
+                    <li>Interesting abilities and lore</li>
+                </ul>
+
+                <div class="ev-tip-box">
+                    ⚡ <strong>TIP:</strong> The more detailed and unique your card is, the higher your chances of winning.
+                </div>
+
+                <div style="text-align:center;margin-top:28px;">
+                    <a class="ev-submit-cta" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission">✉ Submit Your Art Now</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- END EVENT MODAL -->
+
+<div id="receipt-overlay">
+    <div class="receipt-box glass-panel">
+        <div class="receipt-header">EXCHANGE COMPLETE</div>
+        <div id="receipt-list"></div>
+        <div class="receipt-total"><span>TOTAL GOLD</span><span id="receipt-total-gold">0g</span></div>
+        <button class="receipt-close-btn" onclick="document.getElementById('receipt-overlay').style.display='none'" aria-label="Close receipt">CLOSE</button>
+    </div>
+</div>
+
+<div id="achievement-claim-overlay">
+    <div class="claim-box glass-panel">
+        <div class="receipt-header">REWARD CLAIMED</div>
+        <div id="achievement-claim-body"></div>
+        <button class="receipt-close-btn" onclick="document.getElementById('achievement-claim-overlay').style.display='none'" aria-label="Close reward">NICE</button>
+    </div>
+</div>
+
+<div id="shop-confirm-overlay" class="shop-confirm-overlay" onclick="closeShopConfirm()">
+    <div class="shop-confirm-modal glass-panel" onclick="event.stopPropagation()">
+        <h3 id="shop-confirm-title">Buy Item?</h3>
+        <p id="shop-confirm-sub">Are you sure you want to buy this?</p>
+        <div id="shop-confirm-qty-wrap" style="display:none;">
+            <input id="shop-confirm-qty" type="number" min="1" value="1" style="width:120px;padding:9px 12px;border-radius:10px;border:1px solid var(--border-primary);background:var(--bg-tertiary);color:var(--text-primary);text-align:center;font-weight:900;">
+        </div>
+        <div class="shop-confirm-actions">
+            <button class="shop-confirm-btn buy" id="shop-confirm-buy-btn">BUY</button>
+            <button class="shop-confirm-btn buy-more" id="shop-confirm-buy-more-btn">BUY MORE</button>
+            <button class="shop-confirm-btn cancel" onclick="closeShopConfirm()">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+<div id="shop-preview-overlay" class="shop-preview-overlay" onclick="closeShopPreview()">
+    <div class="shop-preview-modal glass-panel" onclick="event.stopPropagation()">
+        <button class="shop-preview-close" onclick="closeShopPreview()">✕</button>
+        <h3 id="shop-preview-title"></h3>
+        <p id="shop-preview-desc"></p>
+        <div id="shop-preview-art" class="shop-preview-art"></div>
+    </div>
+</div>
+
+<div id="inspect-overlay" onclick="closeInspection()"></div>
+
+<div id="filter-overlay" onclick="closeFilterOverlay()">
+    <div class="filter-overlay-content" onclick="event.stopPropagation()">
+        <button class="filter-overlay-close" onclick="closeFilterOverlay()" aria-label="Close filters">✕</button>
+        <h2>FILTERS</h2>
+        <div class="filter-section"><h3>Types</h3><div class="filter-pill-row" id="fo-types"></div></div>
+        <div class="filter-section"><h3>Rarity</h3><div class="filter-pill-row" id="fo-rarity"></div></div>
+        <div class="filter-section"><h3>Sort</h3><div class="filter-pill-row" id="fo-sort"></div></div>
+        <button class="filter-apply-btn" onclick="applyFilters()">APPLY FILTERS</button>
+    </div>
+</div>
+
+<div id="welcome-back-overlay"><div class="wb-modal" id="wb-modal"></div></div>
+
+<div id="daily-reward-overlay">
+    <div class="daily-reward-modal">
+        <h2>DAILY REWARD</h2>
+        <p>Come back every day for bigger rewards!</p>
+        <div class="daily-countdown" id="daily-countdown">Resets in --:--:--</div>
+        <div class="daily-days-row" id="daily-days-row"></div>
+        <div id="daily-reward-display" style="margin-bottom:20px;"></div>
+        <button class="daily-claim-btn" id="daily-claim-btn">CLAIM REWARD</button><br>
+        
+        <!-- LUCKY WHEEL ACCESS -->
+        <h3 style="margin:20px 0 10px;color:var(--brand-gold);">FEELING LUCKY?</h3>
+        <button class="daily-claim-btn" style="background:linear-gradient(135deg,#9b59b6,#8e44ad);box-shadow:0 0 15px rgba(155,89,182,0.4);" onclick="openLuckyWheel()">🎡 SPIN LUCKY WHEEL</button><br>
+
+        <button style="background:transparent;border:none;color:#555;margin-top:15px;cursor:pointer;" onclick="closeDailyReward()">Close</button>
+    </div>
+</div>
+
+<!-- ===== LUCKY WHEEL OVERLAY ===== -->
+
+<div id="lucky-wheel-overlay" class="stumble-wheel-ov">
+
+    <!-- Corner neon lights -->
+    <div class="swl-light swl-tl"></div>
+    <div class="swl-light swl-tr"></div>
+    <div class="swl-light swl-bl"></div>
+    <div class="swl-light swl-br"></div>
+
+    <!-- LEFT: half-cut wheel -->
+    <div class="swl-half">
+        <div class="swl-wheel-wrap">
+            <!-- Outer glow rim -->
+            <div class="swl-rim"></div>
+            <!-- The actual spinning wheel (keep id for JS) -->
+            <div class="wheel swl-wheel" id="lucky-wheel">
+                <div class="wheel-seg" style="--i:1;--clr:#c0392b;"><span>💰<br>50G</span></div>
+                <div class="wheel-seg" style="--i:2;--clr:#2471a3;"><span>📦<br>PACK</span></div>
+                <div class="wheel-seg" style="--i:3;--clr:#b7950b;"><span>💰<br>200G</span></div>
+                <div class="wheel-seg" style="--i:4;--clr:#7d3c98;"><span>⭐<br>EPIC</span></div>
+                <div class="wheel-seg" style="--i:5;--clr:#d35400;"><span>💰<br>100G</span></div>
+                <div class="wheel-seg" style="--i:6;--clr:#1e8449;"><span>📦<br>x2</span></div>
+                <div class="wheel-seg" style="--i:7;--clr:#1c2833;"><span>💰<br>10G</span></div>
+                <div class="wheel-seg" style="--i:8;--clr:#b8860b;"><span>👑<br>LEG!</span></div>
+            </div>
+            <!-- Center hub -->
+            <div class="swl-hub">ORB</div>
+        </div>
+        <!-- Pointer arrow from right edge of visible half -->
+        <div class="swl-pointer">▶</div>
+    </div>
+
+    <!-- RIGHT: panel -->
+    <div class="swl-panel">
+        <div class="swl-kicker">DAILY REWARD</div>
+        <h2 class="swl-title">Lucky<br>Wheel</h2>
+        <p class="swl-sub">Spin once per day for prizes</p>
+
+        <div class="swl-prizes">
+            <div class="swl-prize" style="--pc:#c0392b;">💰 50G</div>
+            <div class="swl-prize" style="--pc:#2471a3;">📦 Pack</div>
+            <div class="swl-prize" style="--pc:#7d3c98;">⭐ Epic Card</div>
+            <div class="swl-prize" style="--pc:#b8860b;">👑 Legendary!</div>
+        </div>
+
+        <button class="swl-spin-btn" id="wheel-spin-btn" onclick="spinLuckyWheel()">🎡 SPIN NOW</button>
+        <button class="swl-close-btn" onclick="closeLuckyWheel()">← BACK</button>
+    </div>
+</div>
+
+<div id="settings-overlay">
+    <div class="settings-modal">
+        <button class="settings-close" onclick="closeSettings()" aria-label="Close settings">✕</button>
+        <h2>SETTINGS</h2>
+        <div class="settings-row"><span class="settings-row-label">Theme</span><div class="theme-toggle"><span class="theme-opt active" id="theme-dark" onclick="setTheme('dark')">Dark</span><span class="theme-opt" id="theme-light" onclick="setTheme('light')">Light</span></div></div>
+        <div class="settings-row"><span class="settings-row-label">Sound</span><div class="theme-toggle"><span class="theme-opt active" id="sound-on" onclick="setSound(true)">On</span><span class="theme-opt" id="sound-off" onclick="setSound(false)">Off</span></div></div>
+        <div class="settings-row"><span class="settings-row-label">Frosted Header</span><div class="theme-toggle"><span class="theme-opt active" id="frost-on" onclick="setHeaderFrost(true,this)">On</span><span class="theme-opt" id="frost-off" onclick="setHeaderFrost(false,this)">Off</span></div></div>
+        <div class="settings-section"><h3>Cloud Save</h3><p style="color:var(--text-muted);font-size:0.8rem;margin:0 0 10px;">Transfer progress between devices</p><button class="cloud-btn" onclick="exportSave()">Export Code</button><button class="cloud-btn" onclick="promptImport()">Import Code</button><textarea class="cloud-textarea" id="cloud-code-area" placeholder="Your save code appears here..." readonly></textarea><div class="cloud-status" id="cloud-status"></div></div>
+        <div class="settings-section"><h3>Tutorial</h3><button class="cloud-btn" onclick="replayTutorial()">Restart Tutorial</button></div>
+        <div class="settings-section"><h3>Delete Progress</h3><p style="color:var(--text-muted);font-size:0.8rem;margin:0 0 10px;">For testing purposes only</p><button class="cloud-btn" style="border-color:#e74c3c;color:#e74c3c;" onclick="confirmDeleteProgress()">Delete All Progress</button></div>
+    </div>
+</div>
+
+<div id="profile-overlay">
+    <div class="cc-overlay-content">
+        <button class="cc-close-btn" onclick="closeProfile()" aria-label="Close profile">✕</button>
+        <div class="cc-scene">
+            <div class="cc-card" id="cc-card">
+                <div class="cc-face cc-front">
+                    <div class="cc-glint"></div>
+                    <div class="cc-chip"><div class="cc-chip-inner"></div></div>
+                    <button class="cc-achiev-btn" onclick="event.stopPropagation();toggleAchievePanel();">ACHIEVEMENTS</button>
+                    <button class="cc-settings-btn" onclick="event.stopPropagation();openSettings();">SETTINGS</button>
+                    <div class="cc-brand-text">CARDs</div>
+                    <div class="cc-holder-name" id="cc-holder-name">PLAYER NAME</div>
+                    <div class="cc-card-number" id="cc-card-number"></div>
+                    <div class="cc-level-badge" id="cc-level-badge">LVL 1</div>
+                    <div class="cc-avatar-frame" id="cc-avatar-frame">?</div>
+                    <div class="cc-valid-label">MEMBER SINCE</div>
+                    <div class="cc-valid-date" id="cc-valid-date">06/26</div>
+                </div>
+                <div class="cc-face cc-back">
+                    <div class="cc-magstripe"><div class="cc-xp-label">XP PROGRESS</div><div class="cc-xp-fill" id="cc-xp-fill" style="width:0%"></div></div>
+                    <div class="cc-sig-strip"><span class="cc-sig-text" id="cc-sig-text">WINS: 0 | LOSSES: 0</span></div>
+                    <div class="cc-cvv-box"><span class="cc-cvv-text" id="cc-cvv-text">0%</span></div>
+                    <div class="cc-stamps-area" id="cc-stamps-area"></div>
+                    <div class="cc-match-trend" id="cc-match-trend"><span class="cc-trend-label">FORM</span></div>
+                    <div id="cc-favorite-slot" class="cc-favorite-box">
+                        <div class="cc-fav-thumb" id="cc-fav-thumb"></div>
+                        <div><div style="font-size:0.5rem;color:#666;text-transform:uppercase;letter-spacing:1px;">Favorite</div><div id="cc-fav-name" style="font-weight:900;color:#ddd;font-size:0.72rem;">None</div></div>
+                    </div>
+                    <div class="cc-gauntlet-best" id="cc-gauntlet-best">
+                        <span style="font-size:0.5rem;color:#666;text-transform:uppercase;letter-spacing:1px;">Gauntlet Best</span>
+                        <span id="cc-gauntlet-val" style="font-weight:900;color:var(--brand-gold);font-size:0.78rem;">Stage 0</span>
+                    </div>
+                    <div class="cc-back-stats-row">
+                        <div class="cc-mini-stat"><div class="cc-mini-stat-val" id="cc-stat-matches">0</div><div class="cc-mini-stat-label">Matches</div></div>
+                        <div class="cc-mini-stat"><div class="cc-mini-stat-val" id="cc-stat-cards">0</div><div class="cc-mini-stat-label">Cards</div></div>
+                        <div class="cc-mini-stat"><div class="cc-mini-stat-val" id="cc-stat-level">1</div><div class="cc-mini-stat-label">Level</div></div>
+                    </div>
+                    <div class="cc-back-brand">orb</div>
+                    <div class="cc-back-note">Verified CARDs Arena member.</div>
+                </div>
+            </div>
+        </div>
+        <button class="cc-edit-toggle" id="cc-edit-toggle" onclick="toggleEditSection()">EDIT PROFILE</button>
+        <div class="cc-edit-section" id="cc-edit-section" style="display:none;">
+            <div class="cc-edit-title">PLAYER NAME</div>
+            <input type="text" class="cc-name-input" id="cc-name-input" placeholder="Enter your name..." maxlength="16">
+            <div class="cc-edit-title" style="margin-top:12px;">AVATAR</div>
+<div class="skribbl-editor">
+    <div class="skribbl-editor-row">
+        <!-- Left arrows: positioned at eye/mouth/color heights -->
+        <div class="skribbl-arrows-left">
+            <button class="skribbl-arr" onclick="cycleAvatar('eyes',-1)" title="Change eyes">‹</button>
+            <button class="skribbl-arr" onclick="cycleAvatar('mouth',-1)" title="Change mouth">‹</button>
+            <button class="skribbl-arr" onclick="cycleAvatar('body',-1)" title="Change color">‹</button>
+        </div>
+        <!-- Live canvas preview -->
+        <canvas id="avatar-canvas" width="160" height="190" style="border-radius:12px;display:block;flex-shrink:0;"></canvas>
+        <!-- Right arrows -->
+        <div class="skribbl-arrows-right">
+            <button class="skribbl-arr" onclick="cycleAvatar('eyes',1)" title="Change eyes">›</button>
+            <button class="skribbl-arr" onclick="cycleAvatar('mouth',1)" title="Change mouth">›</button>
+            <button class="skribbl-arr" onclick="cycleAvatar('body',1)" title="Change color">›</button>
+        </div>
+    </div>
+</div>
+<button class="cc-save-btn" onclick="saveProfile()">SAVE PROFILE</button>
+        </div>
+    </div>
+</div>
+
+<div id="fight-modal-overlay">
+    <div class="fight-modal">
+        <h2>⚔️ BATTLE MODE</h2>
+        <div class="fight-mode-tabs" id="fight-mode-tabs">
+            <div class="fmt active" data-mode="normal" onclick="setFightMode('normal',this)">NORMAL</div>
+            <div class="fmt" data-mode="draft" onclick="setFightMode('draft',this)">DRAFT</div>
+            <div class="fmt" data-mode="gauntlet" onclick="setFightMode('gauntlet',this)">GAUNTLET</div>
+        </div>
+        <div id="fight-normal-content"><p style="color:#888;">Your deck size determines battle length</p><div style="color:#666;font-size:0.9rem;">YOUR DECK</div><div class="slider-value" id="slider-val-display">0</div><div style="color:#666;font-size:0.85rem;">cards ready</div></div>
+        <div id="fight-draft-content" style="display:none;"><p style="color:#888;">Draft from a random pool, then battle</p><div style="color:#666;font-size:0.9rem;">DRAFT SIZE</div><input type="range" min="3" max="9" value="5" id="draft-size-slider" oninput="document.getElementById('draft-size-val').innerText=this.value" style="width:200px;accent-color:var(--brand-gold);"><div class="slider-value" id="draft-size-val">5</div><div style="color:#666;font-size:0.85rem;">cards each</div></div>
+        <div id="fight-gauntlet-content" style="display:none;"><p style="color:#888;">Survive escalating battles. Quit or lose it all!</p><div style="color:#666;font-size:0.9rem;">YOUR DECK</div><div class="slider-value" id="gauntlet-deck-display">0</div><div style="color:#666;font-size:0.85rem;">cards ready</div><div id="gauntlet-best-display" style="margin-top:10px;color:var(--brand-gold);font-size:0.85rem;font-weight:900;"></div></div>
+        <div class="fight-difficulty-row" id="fight-difficulty-row">
+            <div class="fight-diff-pill active" onclick="setBattleDifficulty('easy',this)">EASY</div>
+            <div class="fight-diff-pill" onclick="setBattleDifficulty('normal',this)">NORMAL</div>
+            <div class="fight-diff-pill" onclick="setBattleDifficulty('hard',this)">HARD</div>
+            <div class="fight-diff-pill" onclick="setBattleDifficulty('nightmare',this)">NIGHTMARE</div>
+        </div>
+        <div style="margin-top:10px;color:#555;font-size:0.85rem;" id="deck-warning"></div>
+        <div style="margin-top:25px;">
+            <button class="modal-btn" id="fight-start-btn" onclick="handleFightStart()">ENTER ARENA</button>
+            <button class="modal-btn modal-cancel" onclick="closeFightModal()">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+<div id="draft-overlay">
+    <div class="draft-container">
+        <div class="draft-header"><h2>DRAFT PICK</h2><div class="draft-status" id="draft-status">Your turn — pick a card</div><div class="draft-counts" id="draft-counts">You: 0 | Bot: 0</div></div>
+        <div class="draft-grid" id="draft-grid"></div>
+        <div class="draft-picks-row">
+            <div class="draft-picks-section"><div class="draft-picks-label">YOUR PICKS</div><div class="draft-picks" id="draft-your-picks"></div></div>
+            <div class="draft-picks-section"><div class="draft-picks-label" style="color:#e74c3c;">BOT PICKS</div><div class="draft-picks" id="draft-bot-picks"></div></div>
+        </div>
+    </div>
+</div>
+
+<div id="gauntlet-hud" style="display:none;">
+    <div class="gauntlet-stage" id="gauntlet-stage-display">STAGE 1</div>
+    <div class="gauntlet-diff" id="gauntlet-diff-display">EASY</div>
+    <div class="gauntlet-rewards" id="gauntlet-reward-display">+0g earned</div>
+    <button class="gauntlet-quit-btn" onclick="gauntletQuit()">QUIT & KEEP REWARDS</button>
+</div>
+
+<div id="mobile-deck-drawer" class="mobile-drawer-overlay" onclick="closeMobileDrawer()">
+    <div class="mobile-drawer" onclick="event.stopPropagation()">
+        <div class="mobile-drawer-tabs"><button class="mdt active" onclick="switchDrawerTab('deck',this)">MY DECK</button><button class="mdt" onclick="switchDrawerTab('col',this)">COLLECTION</button></div>
+        <div class="mobile-drawer-grid" id="mobile-drawer-grid"></div>
+    </div>
+</div>
+
+<div id="battle-arena">
+    <div class="battle-topbar">
+        <div class="battle-info"><div class="battle-player-tag player-tag" id="battle-player-name">YOU</div><div class="battle-score" id="battle-score">0 - 0</div><div class="battle-player-tag bot-tag">BOT</div></div>
+        <div class="round-counter" id="round-counter">ROUND 1</div>
+        <button class="forfeit-btn" onclick="forfeitBattle()">FORFEIT</button>
+    </div>
+    <div class="battle-field">
+        <div class="bot-zone"><div class="bot-hand-display" id="bot-hand-display"></div></div>
+        <div class="battle-slots">
+            <div class="battle-slot bot-slot" id="bot-battle-slot"><span class="slot-label">BOT</span></div>
+            <div class="vs-badge">VS</div>
+            <div class="battle-slot player-slot" id="player-battle-slot"><span class="slot-label">YOU</span></div>
+        </div>
+        <div class="player-zone">
+            <div class="action-buttons"><button class="action-btn def-btn" id="def-btn" onclick="resolveRound('hp')">DEF [D]</button><button class="action-btn atk-btn" id="atk-btn" onclick="resolveRound('dmg')">ATK [A]</button></div>
+            <div class="player-hand" id="player-hand"></div>
+        </div>
+        <div class="draw-pile-area"><div class="draws-left-indicator" id="draws-left-text">DRAW: 2</div><div class="draw-pile" id="draw-pile" onclick="drawCard()"></div><div class="pile-count" id="pile-count">0</div></div>
+        
+        <!-- EMOTE SYSTEM REMOVED — user will add custom emotes later -->
+    </div>
+</div>
+
+<div id="game-over-screen"><div class="game-over-box" id="game-over-box"></div></div>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Open menu" aria-expanded="false">☰</button>
+    <div class="logo-group">
+        <img src="assets/orb-logo.png"
+     alt="orb Logo - Navigate to home"
+     class="header-logo"
+     onclick="scrollToHero()"
+     role="button"
+     tabindex="0">
+        <div class="logo-text-group">
+            <div class="logo">orb</div>
+            <div class="subtitle">Collectibles • Tradables • TCG</div>
+        </div>
+    </div>
+    <div class="nav-buttons" id="nav-buttons">
+        <button class="nav-btn active" onclick="navTo('home',this)">Home</button>
+        <button class="nav-btn" onclick="navTo('gallery',this)">Gallery</button>
+        <button class="nav-btn" onclick="navTo('shop',this)">Shop</button>
+        <button class="nav-btn play-btn" onclick="navTo('game',this)">PLAY ARENA</button>
+        <button class="profile-btn" id="profile-btn" onclick="openProfile()">
+            <span class="profile-mini-avatar" id="header-mini-avatar"></span>
+            <span id="header-profile-name">LOGIN</span>
+        </button>
+    </div>
+</header>
+
+<main>
+    <!-- ===== HOME ===== -->
+    <section id="home" class="page-section active-section">
+
+        <!-- HERO ROTATOR (single visible banner + fade) -->
+        <div class="hero-rotator" id="hero-rotator">
+            <!-- SLIDE 1 -->
+            <div class="hero-slide active" data-slide="0">
+                <div class="hero-cinematic" id="hero-cinematic">
+                    <div class="hc-overlay"></div>
+                    <div class="hc-content">
+                        <h1 class="hc-title hero-fade-title">UNLEASH YOUR<br>LEGEND</h1>
+                        <div class="hc-divider"></div>
+                        <p class="hc-subtitle hero-fade-subtitle">BUILD. FIGHT. CONQUER.</p>
+                        <div class="hc-buttons">
+                            <button class="hc-btn hc-btn-ghost" onclick="scrollToHIW()">Learn More</button>
+                            <button class="hc-btn hc-btn-gold" id="hc-buy-btn" onclick="heroBuyPacks()">Buy Packs</button>
+                            <button class="hc-btn hc-btn-fight locked" id="hc-fight-btn" onclick="heroFightBot()">
+                                ⚔️ Fight Bot <span class="hc-fight-lock" id="hc-fight-lock">🔒</span>
+                            </button>
+                        </div>
+                        <p class="hc-fight-msg" id="hc-fight-msg"></p>
+                    </div>
+                    <div class="hc-scroll-indicator" onclick="scrollHeroDown()">
+                        <span>DISCOVER MORE</span>
+                        <div class="hc-arrow">▼</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2 -->
+            <div class="hero-slide" data-slide="1">
+                <div class="hero2-banner" id="hero2-banner">
+                    <div class="h2-bg"></div>
+                    <div class="h2-overlay"></div>
+                    <div class="h2-glow-edges"></div>
+                    <div class="h2-content">
+                        <div class="h2-live-badge">
+                            <span class="h2-live-dot"></span>
+                            LIVE EVENT
+                        </div>
+                        <h2 class="h2-title glow-text">CREATE-A-CARD EVENT</h2>
+                        <p class="h2-subtitle">Design a card. Become part of the game.</p>
+                        <p class="h2-desc">Your creation could become an official orb card.<br>Submit your design and bring your legend to life.</p>
+                        <div class="h2-cd-phase" id="h2-cd-phase">STARTS IN</div>
+                        <div class="h2-countdown" id="h2-countdown">
+                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-days">00</span><span class="h2-cd-label">DAYS</span></div>
+                            <div class="h2-cd-sep">:</div>
+                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-hours">00</span><span class="h2-cd-label">HRS</span></div>
+                            <div class="h2-cd-sep">:</div>
+                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-mins">00</span><span class="h2-cd-label">MIN</span></div>
+                            <div class="h2-cd-sep">:</div>
+                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-secs">00</span><span class="h2-cd-label">SEC</span></div>
+                        </div>
+                        <div class="h2-buttons">
+                            <a class="h2-btn h2-btn-primary" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission">✉ Submit Your Art</a>
+                            <button class="h2-btn h2-btn-secondary" onclick="openEventModal()">Learn More</button>
+                        </div>
+                        <div class="h2-urgency">⏳ Ends June 1 — Limited time event</div>
+                    </div>
+
+                    <div class="hc-scroll-indicator" onclick="scrollHeroDown()">
+                        <span>DISCOVER MORE</span>
+                        <div class="hc-arrow">▼</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HERO ROTATOR CONTROLS -->
+            <div class="hero-controls">
+                <button class="hero-nav-arrow" id="hero-prev" onclick="prevHeroSlide()">❮</button>
+                <div class="hero-dots" id="hero-dots">
+                    <span class="hero-dot active" onclick="goToHeroSlide(0)"></span>
+                    <span class="hero-dot" onclick="goToHeroSlide(1)"></span>
+                </div>
+                <button class="hero-nav-arrow" id="hero-next" onclick="nextHeroSlide()">❯</button>
+            </div>
+        </div>
+        <!-- END HERO ROTATOR -->
+
+        <div id="home-content-start" style="height:90px;"></div>
+
+        <!-- LEGENDS OF THE ARENA -->
+        <div class="section-heading-wrap">
+            <h2 class="section-cinzel-title">Legends of the Arena</h2>
+            <div class="section-title-rule"></div>
+        </div>
+
+        <div class="arena-cards-grid">
+            <div class="arena-card-box tilt-card ac-just-dropped ac-mobile-visible">
+    <span class="ac-tag jd-tag">JUST DROPPED</span>
+    <div class="ac-img-wrap"><div class="ac-img" style="background-image:url('cards/Nautilus.jpg')"></div></div>
+    <h3 class="ac-name">Nautilus</h3>
+    <p class="ac-sub">Common • Water</p>
+</div>
+            <div class="arena-card-box tilt-card ac-featured ac-mobile-visible">
+                <span class="ac-tag feat-tag">FEATURED</span>
+                <div class="ac-img-wrap"><div class="ac-img" style="background-image:url('cards/Skeleton.jpg')"></div></div>
+                <h3 class="ac-name">Skeleton</h3>
+                <p class="ac-sub">Common • Grass</p>
+            </div>
+            <div class="arena-card-box tilt-card ac-popular ac-mobile-hidden">
+                <span class="ac-tag pop-tag">POPULAR</span>
+                <div class="ac-img-wrap"><div class="ac-img" style="background-image:url('cards/Bird.jpg')"></div></div>
+                <h3 class="ac-name">Bird</h3>
+                <p class="ac-sub">Common • Air</p>
+            </div>
+            <div class="arena-card-box tilt-card ac-rare ac-mobile-hidden">
+                <span class="ac-tag rare-tag">RARE</span>
+                <div class="ac-img-wrap"><div class="ac-img" style="background-image:url('cards/Anaconda.jpg')"></div></div>
+                <h3 class="ac-name">Anaconda</h3>
+                <p class="ac-sub">Legendary • Grass</p>
+            </div>
+        </div>
+
+        <!-- HOW IT WORKS — REDESIGNED -->
+<div class="hiw-section" id="hiw-section">
+    <div class="section-heading-wrap">
+        <h2 class="section-cinzel-title">How It Works</h2>
+        <div class="section-title-rule"></div>
+        <p style="color:var(--text-muted);margin-top:12px;font-size:0.95rem;letter-spacing:0.5px;">Four steps to becoming a legend</p>
+    </div>
+
+    <div class="hiw-steps-grid" id="hiw-steps-grid">
+
+        <div class="hiw-step-card" data-delay="0">
+            <div class="hiw-step-connector"></div>
+            <div class="hiw-step-badge">01</div>
+            <div class="hiw-step-emoji">📦</div>
+            <h3 class="hiw-step-title">Open Packs</h3>
+            <p class="hiw-step-desc">Buy packs with gold earned from battles. Each pack holds 3 cards — commons, epics, and rare legendaries hidden until you flip them.</p>
+            <button class="hiw-step-cta" onclick="navTo('game',document.querySelector('.play-btn'))">Start Opening →</button>
+        </div>
+
+        <div class="hiw-step-card" data-delay="120">
+            <div class="hiw-step-connector"></div>
+            <div class="hiw-step-badge">02</div>
+            <div class="hiw-step-emoji">🃏</div>
+            <h3 class="hiw-step-title">Build a Deck</h3>
+            <p class="hiw-step-desc">Drag cards into your deck rack. Up to 9 cards per deck. Mix types and rarities — diversity beats stacking.</p>
+            <button class="hiw-step-cta" onclick="navTo('gallery',document.querySelectorAll('.nav-btn')[1])">Browse Cards →</button>
+        </div>
+
+        <div class="hiw-step-card" data-delay="240">
+            <div class="hiw-step-connector"></div>
+            <div class="hiw-step-badge">03</div>
+            <div class="hiw-step-emoji">⚔️</div>
+            <h3 class="hiw-step-title">Enter Battle</h3>
+            <p class="hiw-step-desc">Draw cards each round. Pick one, then choose Attack (DMG) or Defense (HP). Higher stat wins the round and steals the enemy card.</p>
+            <button class="hiw-step-cta" onclick="openHIWOverlay('rules')">Full Rules →</button>
+        </div>
+
+        <div class="hiw-step-card" data-delay="360">
+            <div class="hiw-step-badge">04</div>
+            <div class="hiw-step-emoji">👑</div>
+            <h3 class="hiw-step-title">Collect & Rise</h3>
+            <p class="hiw-step-desc">Win cards from beaten enemies. Earn XP and gold. Unlock harder difficulties and push your gauntlet record.</p>
+            <button class="hiw-step-cta" onclick="openHIWOverlay('collect')">Progression →</button>
+        </div>
+
+    </div>
+</div>
+
+        <!-- LATEST NEWS -->
+        <div class="latest-news-section">
+            <div class="section-heading-wrap">
+                <h2 class="section-cinzel-title">Latest from the Arena</h2>
+                <div class="section-title-rule"></div>
+            </div>
+            <div class="news-grid">
+                <div class="news-card glass-panel" onclick="openNews('bat')">
+                    <span class="news-date">March 27, 2026</span>
+                    <h3 class="news-headline">Phantom Type Bat Revealed</h3>
+                    <p class="news-body">Silent, fast, and vicious. The Bat strikes before opponents can react...<br><span class="news-rm">READ MORE ›</span></p>
+                </div>
+                <div class="news-card glass-panel" onclick="openNews('arena2')">
+                    <span class="news-date">March 27, 2026</span>
+                    <h3 class="news-headline">New Arena Themes</h3>
+                    <p class="news-body">Customize your combat layout with visually stunning dynamic backgrounds...<br><span class="news-rm">READ MORE ›</span></p>
+                </div>
+                <div class="news-card glass-panel" onclick="openNews('update')">
+                    <span class="news-date">March 27, 2026</span>
+                    <h3 class="news-headline">The Mega Update Details</h3>
+                    <p class="news-body">Battle emotes, new lore systems, a lucky wheel and a pity drops system...<br><span class="news-rm">READ MORE ›</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- YOUR PROGRESS -->
+        <div class="home-progress-wrap">
+            <div class="progress-widget glass-panel" id="home-progress-widget">
+                <div class="pw-header">
+                    <div class="pw-title">Your Progress</div>
+                    <div class="pw-nudge" id="progress-nudge-pill">Open a pack to get moving</div>
+                </div>
+                <div class="pw-grid">
+    <div class="pw-card">
+        <h4>Cards Collected</h4>
+        <div class="pw-big" id="pw-cards-big" style="font-size:2.8rem;">0</div>
+        <div class="pw-small" id="pw-cards-sub">of 0 total</div>
+        <div class="pw-xp-bar" style="margin-top:8px;"><div class="pw-xp-fill" id="pw-cards-fill" style="width:0%"></div></div>
+        <div class="pw-small" style="margin-top:6px;" id="pw-level">LVL 1 · <span id="pw-xp-text">0 XP</span></div>
+    </div>
+    <div class="pw-card">
+        <h4>Daily Objectives</h4>
+        <div id="pw-daily-lines"></div>
+        <div style="margin-top:10px;border-top:1px solid var(--border-secondary);padding-top:10px;">
+            <div class="pw-small" style="margin-top:0;">
+                <strong style="color:var(--brand-gold);">Weekly:</strong>
+                <span id="pw-weekly-text">Not started</span>
+            </div>
+        </div>
+    </div>
+    <div class="pw-card">
+        <h4>Collection Memory</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
+            <div id="pw-last-opened-wrap" class="pw-empty">No last opened card yet.</div>
+            <div id="pw-favorite-wrap" class="pw-empty">No favorite card chosen yet.</div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+        <!-- REVIEWS -->
+        <div class="home-reviews-wrap">
+            <div class="review-section-container">
+                <div class="rating-badge" id="rating-badge">AVG Stars 4.9 (32 reviews)</div>
+                <div id="reviews-container" class="review-grid-6"></div>
+                <button class="see-more-reviews-btn" id="see-more-reviews-btn" onclick="showMoreReviews()" style="display:none;">SEE MORE REVIEWS</button>
+            </div>
+        </div>
+
+        <!-- LEAVE A REVIEW -->
+        <div class="suggestion-section-wrapper">
+            <div class="suggestion-box glass-panel">
+                <h3 style="margin-top:0;color:var(--text-primary);">SEND FEEDBACK</h3>
+                <p style="color:var(--text-muted);font-size:0.9rem;">Rate the new update!</p>
+
+                <div class="rating-select" id="rating-select">
+                    <span class="star-btn" data-star="1" onclick="rateHalf(event,1)">&#9733;</span>
+                    <span class="star-btn" data-star="2" onclick="rateHalf(event,2)">&#9733;</span>
+                    <span class="star-btn" data-star="3" onclick="rateHalf(event,3)">&#9733;</span>
+                    <span class="star-btn" data-star="4" onclick="rateHalf(event,4)">&#9733;</span>
+                    <span class="star-btn" data-star="5" onclick="rateHalf(event,5)">&#9733;</span>
+                </div>
+
+                <input type="text" id="suggestion-username" class="suggestion-input" placeholder="Your Name / Username" style="min-height:32px; padding:8px 12px; font-size:0.85rem; margin-bottom:8px; resize:none;" disabled>
+                <textarea class="suggestion-input" id="suggestion-text" placeholder="Select a star rating first…" style="min-height:120px;" disabled></textarea>
+
+                <button class="send-btn" id="send-review-btn" onclick="sendSuggestionEmail(); return false;">
+    SUBMIT REVIEW
+</button>
+
+                <div id="review-hint" style="margin-top:12px;color:var(--text-dim);font-size:0.85rem;"></div>
+            </div>
+        </div>
+
+        <footer class="site-footer">© 2025-2026 <span>orb</span> — All rights reserved.</footer>
+    </section>
+
+    <!-- ===== GALLERY ===== -->
+    <section id="gallery" class="page-section">
+        <div class="gallery-header"><h1>CARD DATABASE</h1><p style="color:var(--text-muted);margin:0;">Cards unlock when you find them.</p></div>
+        <div class="gallery-toolbar">
+            <div class="gallery-progress-box glass-panel" id="gallery-progress-box"><div class="gp-number"><span id="gp-owned">0</span><span class="gp-slash">/</span><span id="gp-total">12</span></div><div class="gp-label">COLLECTED</div><div class="gp-bar-wrap"><div class="gp-bar-fill" id="gp-bar-fill" style="width:0%"></div></div></div>
+            <div class="gallery-search-wrap"><input type="text" class="gallery-search-input" id="gallery-search" placeholder="Search cards..." oninput="renderGallery()"></div>
+            <div class="filter-pill-group"><div class="filter-pill active" onclick="setOwnedFilter('all',this)">ALL</div><div class="filter-pill" onclick="setOwnedFilter('owned',this)">COLLECTED</div><div class="filter-pill" onclick="setOwnedFilter('unowned',this)">MISSING</div></div>
+            <button class="more-filters-btn" onclick="openFilterOverlay()">⚙️ Filters</button>
+            <button id="gallery-sell-btn" class="sell-btn" onclick="sellDuplicates()">SELL EXTRAS</button>
+        </div>
+        <div id="gallery-grid-container" class="gallery-grid"></div>
+        <div id="museum-wall" class="museum-wall">
+            <button class="museum-arrow museum-arrow-left" id="museum-arrow-left" onclick="museumNav(-1)">‹</button>
+            <div class="museum-carousel" id="museum-carousel"></div>
+            <button class="museum-arrow museum-arrow-right" id="museum-arrow-right" onclick="museumNav(1)">›</button>
+        </div>
+        <div class="museum-hint" id="museum-hint">Press <kbd>Shift+M</kbd> for Museum Mode</div>
+        <footer class="site-footer">© 2026 <span>orb</span> — All rights reserved.</footer>
+    </section>
+
+    <!-- ===== SHOP ===== -->
+<section id="shop" class="page-section">
+
+<div class="shop-troll-page">
+
+<div class="shop-bg-card c1"></div>
+<div class="shop-bg-card c2"></div>
+<div class="shop-bg-card c3"></div>
+<div class="shop-bg-card c4"></div>
+<div class="shop-bg-card c5"></div>
+<div class="shop-bg-card c6"></div>
+<div class="shop-bg-card c7"></div>
+<div class="shop-bg-card c8"></div>
+<div class="shop-bg-card c9"></div>
+<div class="shop-bg-card c10"></div>
+<div class="shop-bg-card c11"></div>
+<div class="shop-bg-card c12"></div>
+
+    <h1 class="shop-title">ORB MARKET</h1>
+
+    <p class="shop-subtitle">
+        Rumors say it exists.
+    </p>
+
+<button
+    id="fake-shop-btn"
+    class="fake-shop-btn"
+    onclick="fakeShopClick()">
+    OPEN SHOP
+</button>
+
+<div id="shop-message" class="shop-message">
+    Rumors say it exists.
+</div>
+
+</div>
+
+</section>
+
+</section>
+
+    <section id="news" class="page-section">
+        <div class="news-hub-wrap">
+            <div class="news-hub-head glass-panel">
+                <div>
+                    <div class="news-hub-kicker">ARENA JOURNAL</div>
+                    <h1>News Hub</h1>
+                    <p>Updates, reveals and patch stories in one place.</p>
+                </div>
+            </div>
+            <div class="news-hub-grid" id="news-hub-grid"></div>
+            <div class="news-hub-article glass-panel" id="news-hub-article">
+                <div class="news-hub-empty">Select an article to read details.</div>
+            </div>
+        </div>
+        <footer class="site-footer">© 2026 <span>orb</span> — All rights reserved.</footer>
+    </section>
+
+    <!-- ===== GAME ===== -->
+    <section id="game" class="page-section">
+        <div id="game-table">
+            <div id="plank-left" class="side-plank"><div class="ui-label deck-toggle-label" id="deck-toggle-label" onclick="toggleDeckPresetBar()">My Deck</div><div class="deck-counter" id="deck-counter">0 / 9</div><div class="deck-preset-bar collapsed" id="deck-preset-bar"><button class="deck-preset-btn active" onclick="switchDeckPreset('A')">A [X]</button><button class="deck-preset-btn" onclick="switchDeckPreset('B')">B [Y]</button><button class="deck-preset-btn" onclick="switchDeckPreset('C')">C [Z]</button></div><div id="deck-rack-content"></div></div>
+            <div class="board-center" id="board-center">
+                <div class="arena-ambient"></div>
+                <button class="mobile-deck-btn" onclick="openMobileDrawer()">📋 DECK</button>
+                <div class="coin-pouch">💰 <span id="coin-display">1000</span></div>
+                <div class="daily-float-btn" id="daily-float-btn" onclick="openDailyReward()">DAILY</div>
+                <div class="instruction-text" id="instruction">OPEN PACKS TO BUILD YOUR DECK</div>
+                <div id="pack-area"></div>
+                <div class="game-shop-buttons">
+                    <button class="shop-btn-gold" onclick="buyPack('normal')">STANDARD PACK<br><span style="font-size:0.8rem;">100 Gold</span></button>
+                    <button class="shop-btn-gold legendary-pack" onclick="buyPack('legendary')">EPIC PACK<br><span style="font-size:0.8rem;">500 Gold</span></button>
+                    <div class="fight-bot-wrapper"><button class="shop-btn-gold fight-bot-btn" onclick="openFightModal()">⚔️ BATTLE<br><span style="font-size:0.8rem;">Use Your Deck</span></button></div>
+                </div>
+            </div>
+            <div id="plank-right" class="side-plank"><div class="ui-label">Collection</div><div id="col-rack-content"></div></div>
+        </div>
+    </section>
+</main>
+
+<div id="weekly-reward-overlay" class="weekly-reward-overlay">
+    <div class="weekly-reward-modal glass-panel">
+        <h2>WEEKLY MISSION</h2>
+        <p>Hard missions, higher rewards.</p>
+        <div id="weekly-reward-body"></div>
+        <button class="daily-claim-btn" id="weekly-claim-btn" onclick="claimWeeklyObjective()">CLAIM WEEKLY REWARD</button><br>
+        <button class="wheel-close-btn" onclick="closeWeeklyReward()">Close</button>
+    </div>
+</div>
+
+<div id="tutorial-overlay" class="tutorial-overlay" onclick="skipTutorial()">
+    <div id="tutorial-modal" class="tutorial-modal glass-panel" onclick="event.stopPropagation()"></div>
+</div>
+
+<script src="js/news.js?v=2"></script>
+<script src="js/data.js?v=2"></script>
+<script src="js/state.js?v=2"></script>
+<script src="js/utils.js?v=2"></script>
+<script src="js/tutorial.js?v=2"></script>
+<script src="js/ui.js?v=2"></script>
+<script src="js/game.js?v=2"></script>
+<script src="js/battle.js?v=2"></script>
+<script src="js/event.js?v=2"></script>
+<script src="js/shop.js?v=2"></script>
+<script src="js/init.js?v=2"></script>
+
+</body>
+</html>
