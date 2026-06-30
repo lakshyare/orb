@@ -183,29 +183,64 @@
         </div>
 
         <div class="ev-nav" id="ev-nav">
-            <button class="ev-nav-btn active" onclick="evScrollTo('participate')">HOW TO JOIN</button>
-            <button class="ev-nav-btn" onclick="evScrollTo('art')">ART REQ</button>
-            <button class="ev-nav-btn" onclick="evScrollTo('details')">CARD DETAILS</button>
-            <button class="ev-nav-btn" onclick="evScrollTo('rewards')">REWARDS</button>
-            <button class="ev-nav-btn" onclick="evScrollTo('status')">STATUS</button>
-            <button class="ev-nav-btn" onclick="evScrollTo('why')">WHY JOIN</button>
-            <div class="ev-nav-thumb" id="ev-nav-thumb"></div>
-        </div>
+    <button class="ev-nav-btn active" onclick="evScrollTo('winners')">🏆 WINNERS</button>
+    <button class="ev-nav-btn" onclick="evScrollTo('participate')">HOW TO JOIN</button>
+    <button class="ev-nav-btn" onclick="evScrollTo('art')">ART REQ</button>
+    <button class="ev-nav-btn" onclick="evScrollTo('details')">CARD DETAILS</button>
+    <button class="ev-nav-btn" onclick="evScrollTo('rewards')">REWARDS</button>
+    <button class="ev-nav-btn" onclick="evScrollTo('why')">WHY JOIN</button>
+    <div class="ev-nav-thumb" id="ev-nav-thumb"></div>
+</div>
 
         <div class="ev-modal-body" id="ev-modal-body">
         
-            <div class="ev-section" id="ev-sec-status" style="background:linear-gradient(135deg,rgba(241,196,15,0.08),rgba(231,76,60,0.06));border-bottom:1px solid rgba(241,196,15,0.15);">
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <div style="font-size:2rem;">📮</div>
-        <div>
-            <div style="font-size:0.6rem;font-weight:900;letter-spacing:3px;color:var(--brand-gold);text-transform:uppercase;">Event Status</div>
-            <div style="font-size:1.1rem;font-weight:900;color:#fff;margin:4px 0;">Winners will be revealed soon!</div>
-            <div style="font-size:0.85rem;color:#9ea5bb;line-height:1.6;">Results are being reviewed. Expect an announcement <strong style="color:var(--brand-gold);">2–3 weeks after June 1</strong>.<br>
-            <span style="color:#2ecc71;font-weight:900;">✅ Submissions are still open!</span> You can still send your art — late entries may qualify.</div>
+            <div class="ev-section" id="ev-sec-winners">
+    <!-- EVENT CLOSED banner -->
+    <div class="ev-closed-banner">
+        <div class="ev-closed-icon">🎉</div>
+        <div class="ev-closed-title">EVENT CLOSED</div>
+        <div class="ev-closed-sub">Thank you to everyone who submitted. The community delivered something incredible.</div>
+    </div>
+
+    <!-- Podium -->
+    <div class="ev-podium">
+        <!-- 2nd place -->
+        <div class="ev-podium-slot ev-p2">
+            <div class="ev-podium-card-img" style="background-image:url('cards/Centaur.jpg')"></div>
+            <div class="ev-podium-medal">🥈</div>
+            <div class="ev-podium-name">Centaur</div>
+            <div class="ev-podium-creator">Community Card</div>
+            <div class="ev-podium-stand ev-stand-2">
+                <div class="ev-podium-place">2</div>
+            </div>
+        </div>
+
+        <!-- 1st place -->
+        <div class="ev-podium-slot ev-p1">
+            <div class="ev-podium-crown">👑</div>
+            <div class="ev-podium-card-img featured" style="background-image:url('cards/Quetzalcoatlus.jpg')"></div>
+            <div class="ev-podium-medal">🥇</div>
+            <div class="ev-podium-name">Quetzalcoatlus</div>
+            <div class="ev-podium-creator">Community Card</div>
+            <div class="ev-podium-stand ev-stand-1">
+                <div class="ev-podium-place">1</div>
+            </div>
+        </div>
+
+        <!-- 3rd place -->
+        <div class="ev-podium-slot ev-p3">
+            <div class="ev-podium-card-img" style="background-image:url('cards/Nxflower.jpg');filter:brightness(0.5);"></div>
+            <div class="ev-podium-medal">🥉</div>
+            <div class="ev-podium-name">Nxflower</div>
+            <div class="ev-podium-creator">Art coming soon</div>
+            <div class="ev-podium-stand ev-stand-3">
+                <div class="ev-podium-place">3</div>
+            </div>
         </div>
     </div>
-    <div style="margin-top:14px;text-align:center;">
-        <a class="ev-submit-cta" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission" style="display:inline-flex;gap:8px;align-items:center;">✉ Submit Your Art Now</a>
+
+    <div style="text-align:center;margin-top:20px;color:var(--text-muted);font-size:0.85rem;">
+        All winning cards have been added to the game. Find them in your packs! 🎴
     </div>
 </div>
 
@@ -526,6 +561,7 @@
             <div class="fmt active" data-mode="normal" onclick="setFightMode('normal',this)">NORMAL</div>
             <div class="fmt" data-mode="draft" onclick="setFightMode('draft',this)">DRAFT</div>
             <div class="fmt" data-mode="gauntlet" onclick="setFightMode('gauntlet',this)">GAUNTLET</div>
+            <div class="fmt mp-tab" onclick="openMultiplayerMenu()">PVP ⚔️</div>
         </div>
         <div id="fight-normal-content"><p style="color:#888;">Your deck size determines battle length</p><div style="color:#666;font-size:0.9rem;">YOUR DECK</div><div class="slider-value" id="slider-val-display">0</div><div style="color:#666;font-size:0.85rem;">cards ready</div></div>
         <div id="fight-draft-content" style="display:none;"><p style="color:#888;">Draft from a random pool, then battle</p><div style="color:#666;font-size:0.9rem;">DRAFT SIZE</div><input type="range" min="3" max="9" value="5" id="draft-size-slider" oninput="document.getElementById('draft-size-val').innerText=this.value" style="width:200px;accent-color:var(--brand-gold);"><div class="slider-value" id="draft-size-val">5</div><div style="color:#666;font-size:0.85rem;">cards each</div></div>
@@ -996,6 +1032,21 @@
     <div id="tutorial-modal" class="tutorial-modal glass-panel" onclick="event.stopPropagation()"></div>
 </div>
 
+<!-- ===== MULTIPLAYER OVERLAY ===== -->
+<div id="mp-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9500;justify-content:center;align-items:center;backdrop-filter:blur(8px);">
+    <div class="mp-modal glass-panel">
+        <button class="mp-close-x" onclick="closeMPOverlay()">✕</button>
+        <div class="mp-modal-head">
+            <div style="font-size:0.65rem;letter-spacing:3px;color:var(--brand-gold);font-weight:900;">MULTIPLAYER</div>
+            <h2 style="margin:6px 0 0;font-family:'Cinzel',serif;background:var(--brand-main-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">PvP ARENA</h2>
+        </div>
+        <div class="mp-body" id="mp-body"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/multiplayer.js"></script>
 <script src="js/news.js?v=2"></script>
 <script src="js/data.js?v=2"></script>
 <script src="js/state.js?v=2"></script>

@@ -262,33 +262,22 @@ function sendSuggestionEmail(){
         if(ta)ta.focus();
         return false;
     }
-    var name=(un&&un.value.trim())?un.value.trim():(playerProfile&&playerProfile.name?playerProfile.name:'Anonymous');
-
-    /* Build star string */
-    var full=Math.floor(currentRating);
-    var half=currentRating%1!==0;
-    var starStr='';
+    var name=(un&&un.value.trim())?un.value.trim():'Anonymous';
+    var full=Math.floor(currentRating),half=currentRating%1!==0,starStr='';
     for(var i=0;i<full;i++)starStr+='★';
     if(half)starStr+='½';
 
-    var review={user:name,stars:starStr,text:msg,ts:Date.now()};
+    var subject='orb Review: '+starStr+' from '+name;
+    var body='Name: '+name+'\nRating: '+starStr+'\n\nReview:\n'+msg;
+    window.location.href='mailto:cards2.0.tcg@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 
-    try{
-        var pending=JSON.parse(localStorage.getItem('cards_pending_reviews')||'[]');
-        pending.push(review);
-        localStorage.setItem('cards_pending_reviews',JSON.stringify(pending));
-    }catch(e){}
-
-    if(hint)hint.innerText='✓ Review submitted! Thank you — it will appear after approval.';
+    if(hint)hint.innerText='✓ Opening your mail app...';
     if(ta){ta.value='';ta.disabled=true;}
     if(un){un.value='';un.disabled=true;}
-    document.querySelectorAll('.star-btn').forEach(function(s){
-        s.classList.remove('selected','half-selected');
-    });
+    document.querySelectorAll('.star-btn').forEach(function(s){s.classList.remove('selected','half-selected');});
     currentRating=0;
     return false;
 }
-/* compatibility */
 function sendSuggestion(){ return sendSuggestionEmail(); }
 
 /* ===== HOME PROGRESS ===== */

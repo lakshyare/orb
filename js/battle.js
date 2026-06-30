@@ -575,13 +575,19 @@ function renderPlayerHand(){
 
             if(!isTouch){
                 wr.onmouseenter=function(){
-                    if(!playable||cool)return;
                     wr.style.transform='rotate(0deg) translateY(-40px)';
                     wr.style.zIndex=100;
+                    /* Stat tooltip */
+                    var tip=document.createElement('div');
+                    tip.className='hand-stat-tip';
+                    tip.innerHTML='<span class="hst-hp">♥ '+card.hp+'</span><span class="hst-dmg">⚔ '+card.dmg+'</span>';
+                    wr.appendChild(tip);
                 };
                 wr.onmouseleave=function(){
                     wr.style.transform='rotate('+sa+'deg) translateY('+sy+'px)';
                     wr.style.zIndex=sz;
+                    var tip=wr.querySelector('.hand-stat-tip');
+                    if(tip)tip.remove();
                 };
             }
 
