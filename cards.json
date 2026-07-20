@@ -4,7 +4,7 @@
     {"id":3,"name":"Anaconda","type":"Grass","rarity":"legendary","hp":350,"dmg":300,"img":"cards/Anaconda.jpg","lore":"Ancient jungle terror."},
     {"id":4,"name":"Dragon","type":"Fire","rarity":"common","hp":150,"dmg":300,"img":"cards/Dragon.jpg","lore":"A reckless fire drake."},
     {"id":5,"name":"Kirin","type":"Fire","rarity":"common","hp":180,"dmg":290,"img":"cards/Kirin.jpg","lore":"Sacred blaze beast."},
-    {"id":6,"name":"Kangaroo","type":"Fire","rarity":"epic","hp":230,"dmg":320,"img":"cards/Kangaroo.jpg","lore":"Punches hit hard."},
+    {"id":6,"name":"Kangaroo","type":"Fire","rarity":"epic","hp":230,"dmg":320,"img":"cards/kangaroo.jpg","lore":"Punches hit hard."},
     {"id":7,"name":"Cracken","type":"Water","rarity":"common","hp":220,"dmg":280,"img":"cards/Craken.jpg","lore":"Deep-sea brute."},
     {"id":8,"name":"Penguin","type":"Water","rarity":"common","hp":270,"dmg":230,"img":"cards/Penguin.jpg","lore":"Cute. Tactical."},
     {"id":9,"name":"Nautilus","type":"Water","rarity":"common","hp":290,"dmg":190,"img":"cards/Nautilus.jpg","lore":"Ancient sea dweller."},
