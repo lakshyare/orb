@@ -1,41 +1,50 @@
 /* ===== UI.JS ===== */
 function setTheme(m){
     document.body.classList.add('theme-transition');
-    
+    document.body.classList.remove('light-mode','crimson-mode');
+
+    document.querySelectorAll('.theme-opt').forEach(function(el){el.classList.remove('active');});
+
     if(m==='light'){
         document.body.classList.add('light-mode');
-        document.getElementById('theme-light').classList.add('active');
-        document.getElementById('theme-dark').classList.remove('active');
-    }else{
-        document.body.classList.remove('light-mode');
-        document.getElementById('theme-dark').classList.add('active');
-        document.getElementById('theme-light').classList.remove('active');
+        var el=document.getElementById('theme-light');
+        if(el)el.classList.add('active');
+    } else if(m==='crimson'){
+        document.body.classList.add('crimson-mode');
+        var el=document.getElementById('theme-crimson');
+        if(el)el.classList.add('active');
+    } else {
         m='dark';
+        var el=document.getElementById('theme-dark');
+        if(el)el.classList.add('active');
     }
-    
-    setTimeout(function(){
-        document.body.classList.remove('theme-transition');
-    }, 400);
 
+    setTimeout(function(){document.body.classList.remove('theme-transition');},400);
     try{localStorage.setItem('cards_theme',m);}catch(e){}
+}
+function setStyle(s){
+    document.body.classList.remove('pika-mode');
+    document.getElementById('style-classic').classList.remove('active');
+    document.getElementById('style-pika').classList.remove('active');
+    if(s==='pika'){
+        document.body.classList.add('pika-mode');
+        document.getElementById('style-pika').classList.add('active');
+    }else{
+        document.getElementById('style-classic').classList.add('active');
+    }
+    try{localStorage.setItem('cards_style',s);}catch(e){}
+}
+function loadStyle(){
+    try{
+        var s=localStorage.getItem('cards_style');
+        if(s==='pika') setStyle('pika');
+    }catch(e){}
 }
 function setSound(on){
     soundEnabled=on;
     document.getElementById('sound-on').classList.toggle('active',on);
     document.getElementById('sound-off').classList.toggle('active',!on);
     try{localStorage.setItem('cards_sound',String(on));}catch(e){}
-}
-function setHeaderFrost(on){
-    var h=document.querySelector('header');
-    if(on){h.classList.remove('no-frost');}else{h.classList.add('no-frost');}
-    document.getElementById('frost-on').classList.toggle('active',on);
-    document.getElementById('frost-off').classList.toggle('active',!on);
-    try{localStorage.setItem('cards_header_frost',String(on));}catch(e){}
-}
-function loadHeaderFrost(){
-    var v=localStorage.getItem('cards_header_frost');
-    /* default = frosted */
-    if(v==='false')setHeaderFrost(false);
 }
 
 function openSettings(){document.getElementById('settings-overlay').style.display='flex';}
@@ -163,9 +172,9 @@ function renderNewsHub(){
     var article=document.getElementById('news-hub-article');
     if(!grid||!article||!newsDB)return;
 
-    var list=Object.keys(newsDB).map(function(k){
+var list=Object.keys(newsDB).map(function(k){
         var n=newsDB[k];
-        return {id:k,title:n.title,date:n.date,img:n.img,text:n.text};
+        return {id:k,title:n.title,date:n.date,img:n.img,summary:n.summary,body:n.body,badge:n.badge};
     });
 
     list.sort(function(a,b){
@@ -179,21 +188,22 @@ function renderNewsHub(){
        card.innerHTML=
     '<div class="nhc-thumb" style="background-image:url(\''+n.img+'\')"></div>'+
     '<div class="nhc-body">'+
-        '<div class="nhc-date">LATEST REPORT • '+n.date+'</div>'+
+        '<div class="nhc-date">'+(n.badge||'NEWS')+' • '+n.date+'</div>'+
         '<h3>'+n.title+'</h3>'+
-        '<p>'+(n.text||'').slice(0,95)+'...</p>'+
+        '<p>'+(n.summary||'').slice(0,95)+'</p>'+
     '</div>';
         card.onclick=function(){
             grid.querySelectorAll('.news-hub-card').forEach(function(x){x.classList.remove('active');});
             card.classList.add('active');
+            var paras=(n.body||[]).map(function(p){return '<p>'+p+'</p>';}).join('');
             article.innerHTML=
 '<div class="news-hub-article-head">'+
-    '<div class="news-hub-article-date">LATEST REPORT • '+n.date+'</div>'+
+    '<div class="news-hub-article-date">'+(n.badge||'NEWS')+' • '+n.date+'</div>'+
     '<h2>'+n.title+'</h2>'+
     '<div class="news-hub-featured">FEATURED STORY</div>'+
 '</div>'+
                 '<div class="news-hub-hero" style="background-image:url(\''+n.img+'\')"></div>'+
-                '<div class="news-hub-copy">'+String(n.text||'').split('\n\n').map(function(p){return '<p>'+p+'</p>';}).join('')+'</div>';
+                '<div class="news-hub-copy">'+paras+'</div>';
         };
         grid.appendChild(card);
     });
@@ -290,7 +300,7 @@ function getCloseNudge(){
     return'Good momentum — keep going!';
 }
 function renderHomeProgress(){
-var owned=[...new Set(myInventory)].length;
+var owned=[...new Set(myInventory)].filter(function(id){return allCards.some(function(c){return c.id===id;});}).length;
     var pct=TOTAL_CARDS>0?Math.round((owned/TOTAL_CARDS)*100):0;
     var pwBig=document.getElementById('pw-cards-big');
     var pwSub=document.getElementById('pw-cards-sub');
@@ -487,147 +497,6 @@ function setOwnedFilter(m,el){
     el.classList.add('active');
     renderGallery();
 }
-
-/* ===== GALLERY ===== */
-function renderGallery(){
-    var c=document.getElementById('gallery-grid-container');c.innerHTML='';
-    updateSellExtrasVisibility();
-    if(museumActive)return;
-
-    var sv=(document.getElementById('gallery-search')?document.getElementById('gallery-search').value:'').toLowerCase().trim();
-    var uo=[...new Set(myInventory)].length;
-
-    document.getElementById('gp-owned').innerText=uo;
-    document.getElementById('gp-total').innerText=TOTAL_CARDS;
-    document.getElementById('gp-bar-fill').style.width=Math.round(uo/TOTAL_CARDS*100)+'%';
-
-    var mh=document.getElementById('museum-hint');
-    if(mh)mh.style.display=uo>0?'block':'none';
-
-    var list=allCards.slice();
-    if(sv)list=list.filter(function(x){return x.name.toLowerCase().includes(sv)||x.type.toLowerCase().includes(sv)||x.rarity.includes(sv);});
-    if(galleryOwnedFilter==='owned')list=list.filter(function(x){return myInventory.includes(x.id);});
-    if(galleryOwnedFilter==='unowned')list=list.filter(function(x){return !myInventory.includes(x.id);});
-    if(filterState.types&&filterState.types.length>0){
-        list=list.filter(function(x){return filterState.types.indexOf(x.type)>-1;});
-    }
-    if(filterState.rarities&&filterState.rarities.length>0){
-        list=list.filter(function(x){return filterState.rarities.indexOf(x.rarity)>-1;});
-    }
-
-    if(filterState.sort==='alpha')list.sort(function(a,b){return a.name.localeCompare(b.name);});
-    else if(filterState.sort==='attack')list.sort(function(a,b){return b.dmg-a.dmg;});
-    else if(filterState.sort==='hp')list.sort(function(a,b){return b.hp-a.hp;});
-    else if(filterState.sort==='rarityAsc')list.sort(function(a,b){return rarityValue(a.rarity)-rarityValue(b.rarity);});
-    else if(filterState.sort==='rarityDesc')list.sort(function(a,b){return rarityValue(b.rarity)-rarityValue(a.rarity);});
-
-    if(!list.length){c.innerHTML='<div class="gallery-no-results">No cards found</div>';return;}
-
-    list.forEach(function(card){
-        var cnt=myInventory.filter(function(id){return id===card.id;}).length,owned=cnt>0;
-        var item=document.createElement('div');
-        item.draggable = true;
-item.dataset.cardId = card.id;
-
-item.addEventListener('dragstart', function(e){
-    e.dataTransfer.setData('text/plain', String(card.id));
-    item.addEventListener('dragend', function () {
-    item.classList.remove('dragging');
-});
-});
-        item.className='gallery-item '+(owned?'unlocked':'locked');
-        var bg=owned?"url('"+card.img+"')":"url('assets/card_back.png')";
-        var rb='';
-        if(owned&&card.rarity==='legendary')rb='border-color:#ffd700;box-shadow:0 0 15px #ffd700;';
-        else if(owned&&card.rarity==='epic')rb='border-color:#b338ff;box-shadow:0 0 10px #b338ff;';
-        var cntB=owned&&cnt>1?'<div class="card-count-badge">x'+cnt+'</div>':'';
-        var ownB=owned?'<div class="owned-badge">OWNED</div>':'';
-
-        item.innerHTML=
-            '<div style="position:relative;width:100%;">'+
-                '<div class="gallery-card-inner" id="gi-'+card.id+'" style="width:100%;aspect-ratio:160/240;background-image:'+bg+';border-radius:12px;border:2px solid #333;box-shadow:0 5px 15px rgba(0,0,0,0.5);position:relative;overflow:hidden;'+rb+'">'+cntB+'</div>'+
-                ownB+
-            '</div>'+
-            '<div class="gallery-name">'+(owned?card.name:'???')+'</div>';
-
-        if(owned){
-            item.addEventListener('mousemove',function(e){
-                var inner=item.querySelector('.gallery-card-inner');
-                if(!inner)return;
-                var r=inner.getBoundingClientRect();
-                var px=(e.clientX-r.left)/r.width;
-                var py=(e.clientY-r.top)/r.height;
-                var rx=(0.5-py)*18;
-                var ry=(px-0.5)*18;
-                inner.style.transform='perspective(800px) rotateX('+rx+'deg) rotateY('+ry+'deg) scale(1.06)';
-            });
-            item.addEventListener('mouseleave',function(){
-                var inner=item.querySelector('.gallery-card-inner');
-                if(inner)inner.style.transform='';
-            });
-            item.addEventListener('click',function(e){inspectCard(card,'gi-'+card.id,e);});
-        }
-        c.appendChild(item);
-    });
-
-    initHoloFoil();
-}
-
-/* ===== MUSEUM CAROUSEL ===== */
-var museumIndex=0;
-var museumCards=[];
-function renderMuseum(){
-    museumCards=allCards.filter(function(c){return myInventory.includes(c.id);});
-    if(!museumCards.length){
-        document.getElementById('museum-carousel').innerHTML='<div style="color:#555;text-align:center;padding:80px;font-size:1.2rem;">No cards collected yet.</div>';
-        return;
-    }
-    museumIndex=0;
-    renderMuseumCarousel();
-}
-function renderMuseumCarousel(){
-    var w=document.getElementById('museum-carousel');w.innerHTML='';
-    if(!museumCards.length)return;
-    var total=museumCards.length;
-    var indices=[];
-    if(total===1){indices=[0];}
-    else if(total===2){indices=[(museumIndex-1+total)%total,museumIndex];}
-    else{indices=[(museumIndex-1+total)%total,museumIndex,(museumIndex+1)%total];}
-
-    indices.forEach(function(idx,pos){
-        var card=museumCards[idx];
-        var isCenter=(total<=1)?true:(total===2?(pos===1):(pos===1));
-        var frame=document.createElement('div');
-        frame.className='museum-frame '+(isCenter?'center':'side');
-        frame.innerHTML=
-            '<div class="museum-spotlight"></div>'+
-            '<div class="museum-border"><div class="museum-card-img" id="mus-'+card.id+'" style="background-image:url(\''+card.img+'\');"></div></div>'+
-            '<div class="museum-plaque">'+
-                '<div class="museum-plaque-name">'+card.name+'</div>'+
-                '<div class="museum-plaque-sub">'+card.type+' • '+card.rarity.toUpperCase()+'</div>'+
-                '<div class="museum-plaque-stats"><span style="color:#2ecc71;">HP '+card.hp+'</span><span style="color:#e74c3c;">DMG '+card.dmg+'</span></div>'+
-            '</div>';
-
-        if(isCenter){
-            frame.onclick=function(e){inspectCard(card,'mus-'+card.id,e);};
-        }else{
-            frame.onclick=function(){museumIndex=idx;renderMuseumCarousel();};
-        }
-        w.appendChild(frame);
-    });
-}
-function museumNav(dir){
-    if(!museumCards.length)return;
-    museumIndex=(museumIndex+dir+museumCards.length)%museumCards.length;
-    renderMuseumCarousel();
-}
-document.addEventListener('wheel',function(e){
-    var wall=document.getElementById('museum-wall');
-    if(!wall||wall.style.display==='none'||!museumActive)return;
-    if(!wall.contains(e.target)&&e.target!==wall)return;
-    e.preventDefault();
-    museumNav(e.deltaY>0?1:-1);
-},{passive:false});
 
 /* ===== SELL DUPLICATES ===== */
 function sellDuplicates(){
@@ -1152,7 +1021,6 @@ function saveProfile(){
     document.getElementById('cc-edit-toggle').innerText='EDIT PROFILE';
     updateHeaderProfile();
     _updateAvatarFrames();
-    updateCCAvatarFromCanvas();
     createExplosion(window.innerWidth/2,window.innerHeight/2,'accent');
     showToast('Profile saved!','success','✓');
     renderHomeProgress();
@@ -1297,6 +1165,8 @@ function setOwnedFilter(m,el){
     renderGallery();
 }
 
+/* ===== GALLERY ===== */
+
 function renderGalleryDeckBuilder(){
     var wrap=document.getElementById('gallery-deck-builder');
     var slots=document.getElementById('gallery-deck-slots');
@@ -1345,10 +1215,9 @@ function renderGallery(){
     c.innerHTML='';
     updateSellExtrasVisibility();
     renderGalleryDeckBuilder();
-    if(museumActive)return;
 
     var sv=(document.getElementById('gallery-search')?document.getElementById('gallery-search').value:'').toLowerCase().trim();
-    var uo=[...new Set(myInventory)].length;
+    var uo=[...new Set(myInventory)].filter(function(id){return allCards.some(function(c){return c.id===id;});}).length;
 
     document.getElementById('gp-owned').innerText=uo;
     document.getElementById('gp-total').innerText=TOTAL_CARDS;

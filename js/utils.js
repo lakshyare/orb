@@ -66,7 +66,7 @@ function getRandomItems(arr,count){return shuffleArray(arr).slice(0,count).map(c
 function rarityValue(r){return r==='legendary'?3:r==='epic'?2:1;}
 function getInventoryCounts(){var c={};myInventory.forEach(function(id){c[id]=(c[id]||0)+1;});return c;}
 function getSellableExtrasCount(){var c=getInventoryCounts(),e=0;Object.keys(c).forEach(function(id){if(c[id]>1)e+=c[id]-1;});return e;}
-function getDuplicateValue(r){return r==='legendary'?1000:r==='epic'?200:20;}
+function getDuplicateValue(r){return r==='legendary'?500:r==='epic'?100:20;}
 function incPlayerStat(key,amt){if(playerProfile[key]===undefined)playerProfile[key]=0;playerProfile[key]+=amt;}
 function trackMostUsedCard(cid){if(!playerProfile.cardUseCounts)playerProfile.cardUseCounts={};playerProfile.cardUseCounts[cid]=(playerProfile.cardUseCounts[cid]||0)+1;}
 function setLastOpened(cid){lastOpenedCardId=cid;saveLastOpened();renderHomeProgress();}

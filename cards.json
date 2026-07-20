@@ -13,9 +13,8 @@
     {"id":12,"name":"Quetzalcoatlus","type":"Air","rarity":"epic","hp":335,"dmg":240,"img":"cards/Quetzalcoatlus.jpg","lore":"No one has every heard his real roar."},
     {"id":13,"name":"Owl","type":"Phantom","rarity":"common","hp":210,"dmg":260,"img":"cards/Owl.jpg","lore":"Watcher from the dark."},
     {"id":14,"name":"Bat","type":"Phantom","rarity":"epic","hp":265,"dmg":305,"img":"cards/Bat.jpg","lore":"Lives in the shadows."},
-    {"id":15,"name":"Centaur","type":"Air","rarity":"epic","hp":310,"dmg":280,"img":"cards/Centaur.jpg","lore":"The Phantom Dulex"},
+    {"id":15,"name":"Centaur","type":"Phantom","rarity":"epic","hp":310,"dmg":280,"img":"cards/Centaur.jpg","lore":"The Phantom Dulex"},
     {"id":16,"name":"Golem","type":"Magic","rarity":"common","hp":300,"dmg":210,"img":"cards/Golem.jpg","lore":"Heavy stone guardian."},
     {"id":17,"name":"Peacock","type":"Magic","rarity":"common","hp":260,"dmg":230,"img":"cards/Peakock.jpg","lore":"The elegant illusionist."},
-    {"id":18,"name":"Narwhal","type":"Plasma","rarity":"epic","hp":250,"dmg":325,"img":"cards/Narwhal.jpg","lore":"Its horn bends light."},
-    {"id":19,"name":"Nxflower","type":"Grass","rarity":"legendary","hp":0,"dmg":0,"img":"cards/Nxflower.jpg","lore":"Art coming soon."}
+    {"id":18,"name":"Narwhal","type":"Plasma","rarity":"epic","hp":250,"dmg":325,"img":"cards/Narwhal.jpg","lore":"Its horn bends light."}
 ]

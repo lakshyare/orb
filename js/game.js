@@ -153,8 +153,13 @@ function renderRacks(){
         cc.appendChild(el);
     });
 
-    dc.innerHTML += '<div style="height:100px;"></div>';
-    cc.innerHTML += '<div style="height:100px;"></div>';
+    var dcSpacer = document.createElement('div');
+    dcSpacer.style.height = '100px';
+    dc.appendChild(dcSpacer);
+
+    var ccSpacer = document.createElement('div');
+    ccSpacer.style.height = '100px';
+    cc.appendChild(ccSpacer);
 
     initRackDnD();
     setTimeout(initHoloFoil, 50);

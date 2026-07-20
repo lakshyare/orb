@@ -227,7 +227,6 @@ document.addEventListener('keydown',function(e){
         closeEventModal();
         document.getElementById('welcome-back-overlay').style.display='none';
     }
-    if(key==='m'&&e.shiftKey){e.preventDefault();toggleMuseum();return;}
 
     if(battleState.active&&!battleState.resolving){
         if(key===' '||e.code==='Space'){
@@ -299,7 +298,8 @@ document.addEventListener('keydown',function(e){
         initDeckPresets();
         loadPerformanceMode();
         loadHighContrast();
-        loadHeaderFrost();
+        loadStyle();
+        initShopRecycle();
         initExtendedKeyboard();
         if(typeof initDeckPresetToggle==='function')initDeckPresetToggle();
         if(typeof startIntroTutorial==='function')startIntroTutorial(false);
@@ -325,6 +325,20 @@ document.addEventListener('keydown',function(e){
             if(e.shiftKey && e.ctrlKey && (e.key==='r'||e.key==='R')){
             e.preventDefault();
             openReviewAdmin();
+        }
+        if(e.shiftKey && e.key==='L'){
+            e.preventDefault();
+            var tips=['Shuffling the deck...','Polishing the cards...','Waking up the bot...','Loading legendary cards...','Charging the lucky wheel...'];
+            var bl=document.getElementById('boot-loading-screen');
+            var tip=document.getElementById('bl-tip');
+            if(!bl)return;
+            if(bl.style.display==='flex'){bl.style.display='none';return;}
+            if(tip)tip.innerText=tips[Math.floor(Math.random()*tips.length)];
+            /* Reset bar animation */
+            var bar=bl.querySelector('.loading-bar-fill');
+            if(bar){bar.style.animation='none';void bar.offsetWidth;bar.style.animation='loadingFill 2s ease-in-out forwards';}
+            bl.style.display='flex';
+            setTimeout(function(){bl.style.display='none';},2200);
         }
         });
     });

@@ -19,6 +19,13 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="boot-loading-screen" class="boot-loading-screen" style="display:none;">
+    <div class="bl-content">
+        <div class="bl-title" style="font-family:'Cinzel',serif;background:var(--brand-main-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:4rem;letter-spacing:8px;margin-bottom:30px;animation:pulseTitle 2s infinite alternate;">orb</div>
+        <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+        <div class="bl-tip" id="bl-tip">Loading arena...</div>
+    </div>
+</div>
 <canvas id="particle-canvas"></canvas>
 <canvas id="idle-canvas"></canvas>
 <div id="levelup-overlay"><div class="levelup-text" id="levelup-text">LEVEL UP!</div></div>
@@ -169,184 +176,6 @@
     </div>
 </div>
 
-<!-- EVENT MODAL -->
-<div id="event-modal-overlay" style="display:none;" onclick="closeEventModal()" role="dialog" aria-modal="true" aria-label="Create a Card event">
-    <div class="ev-modal glass-panel" onclick="event.stopPropagation()">
-        <button class="ev-close-btn" onclick="closeEventModal()" aria-label="Close event details">✕</button>
-
-        <div class="ev-modal-head">
-            <div class="h2-live-badge" style="justify-content:center;margin-bottom:12px;">
-                <span class="h2-live-dot"></span>LIVE EVENT
-            </div>
-            <h2 class="ev-modal-title">CREATE-A-CARD EVENT</h2>
-            <p>Unleash your creativity and become part of orb.</p>
-        </div>
-
-        <div class="ev-nav" id="ev-nav">
-    <button class="ev-nav-btn active" onclick="evScrollTo('winners')">🏆 WINNERS</button>
-    <button class="ev-nav-btn" onclick="evScrollTo('participate')">HOW TO JOIN</button>
-    <button class="ev-nav-btn" onclick="evScrollTo('art')">ART REQ</button>
-    <button class="ev-nav-btn" onclick="evScrollTo('details')">CARD DETAILS</button>
-    <button class="ev-nav-btn" onclick="evScrollTo('rewards')">REWARDS</button>
-    <button class="ev-nav-btn" onclick="evScrollTo('why')">WHY JOIN</button>
-    <div class="ev-nav-thumb" id="ev-nav-thumb"></div>
-</div>
-
-        <div class="ev-modal-body" id="ev-modal-body">
-        
-            <div class="ev-section" id="ev-sec-winners">
-    <!-- EVENT CLOSED banner -->
-    <div class="ev-closed-banner">
-        <div class="ev-closed-icon">🎉</div>
-        <div class="ev-closed-title">EVENT CLOSED</div>
-        <div class="ev-closed-sub">Thank you to everyone who submitted. The community delivered something incredible.</div>
-    </div>
-
-    <!-- Podium -->
-    <div class="ev-podium">
-        <!-- 2nd place -->
-        <div class="ev-podium-slot ev-p2">
-            <div class="ev-podium-card-img" style="background-image:url('cards/Centaur.jpg')"></div>
-            <div class="ev-podium-medal">🥈</div>
-            <div class="ev-podium-name">Centaur</div>
-            <div class="ev-podium-creator">Community Card</div>
-            <div class="ev-podium-stand ev-stand-2">
-                <div class="ev-podium-place">2</div>
-            </div>
-        </div>
-
-        <!-- 1st place -->
-        <div class="ev-podium-slot ev-p1">
-            <div class="ev-podium-crown">👑</div>
-            <div class="ev-podium-card-img featured" style="background-image:url('cards/Quetzalcoatlus.jpg')"></div>
-            <div class="ev-podium-medal">🥇</div>
-            <div class="ev-podium-name">Quetzalcoatlus</div>
-            <div class="ev-podium-creator">Community Card</div>
-            <div class="ev-podium-stand ev-stand-1">
-                <div class="ev-podium-place">1</div>
-            </div>
-        </div>
-
-        <!-- 3rd place -->
-        <div class="ev-podium-slot ev-p3">
-            <div class="ev-podium-card-img" style="background-image:url('cards/Nxflower.jpg');filter:brightness(0.5);"></div>
-            <div class="ev-podium-medal">🥉</div>
-            <div class="ev-podium-name">Nxflower</div>
-            <div class="ev-podium-creator">Art coming soon</div>
-            <div class="ev-podium-stand ev-stand-3">
-                <div class="ev-podium-place">3</div>
-            </div>
-        </div>
-    </div>
-
-    <div style="text-align:center;margin-top:20px;color:var(--text-muted);font-size:0.85rem;">
-        All winning cards have been added to the game. Find them in your packs! 🎴
-    </div>
-</div>
-
-            <div class="ev-section" id="ev-sec-participate">
-                <h3 class="ev-sec-title">✏️ HOW TO PARTICIPATE</h3>
-                <ul class="ev-list">
-                    <li>Design your own original card</li>
-                    <li>Must be a living being (human, animal, mythical, etc.)</li>
-                    <li>🚫 AI-generated art is <strong>NOT</strong> allowed</li>
-                </ul>
-            </div>
-
-            <div class="ev-section" id="ev-sec-art">
-                <h3 class="ev-sec-title">🎨 ART REQUIREMENTS</h3>
-                <ul class="ev-list">
-                    <li>Canvas: <strong>614 × 899 px</strong></li>
-                    <li>Keep artwork clear and centered</li>
-                    <li>Make your design stand out</li>
-                </ul>
-            </div>
-
-            <div class="ev-section" id="ev-sec-details">
-                <h3 class="ev-sec-title">🧠 CARD DETAILS</h3>
-                <ul class="ev-list">
-                    <li>Card Name</li>
-                    <li>Type — Grass / Fire / Water / Air / Phantom / Magic / Plasma</li>
-                    <li>Attack &amp; Defense stats</li>
-                    <li>Special abilities</li>
-                    <li>Optional lore</li>
-                </ul>
-                <div class="ev-tip-box" style="margin-top:12px;">👉 More detail = better chances</div>
-
-                <h3 class="ev-sec-title" style="margin-top:28px;">📩 SUBMISSIONS</h3>
-                <ul class="ev-list">
-                    <li>Unlimited entries allowed</li>
-                    <li>Submit via: <a class="ev-email-link" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission">cards2.0.tcg@gmail.com</a></li>
-                </ul>
-
-                <h3 class="ev-sec-title" style="margin-top:28px;">📅 TIMELINE</h3>
-                <ul class="ev-list">
-                    <li>Starts: <strong>April 1, 2026</strong></li>
-                    <li>Ends: <strong>June 1, 2026</strong></li>
-                    <li>Results: <strong>2–3 weeks after close</strong></li>
-                </ul>
-            </div>
-
-            <div class="ev-section" id="ev-sec-rewards">
-                <h3 class="ev-sec-title">🏆 REWARDS</h3>
-                <div class="ev-rewards-grid">
-                    <div class="ev-reward-card ev-gold">
-                        <div class="ev-reward-place">🥇 1st Place</div>
-                        <ul class="ev-list">
-                            <li>Official in-game card</li>
-                            <li>Original artwork used</li>
-                            <li>Illustrator credit</li>
-                            <li>Type preserved (balanced stats)</li>
-                        </ul>
-                    </div>
-                    <div class="ev-reward-card ev-silver">
-                        <div class="ev-reward-place">🥈 2nd Place</div>
-                        <ul class="ev-list">
-                            <li>Card added to game</li>
-                            <li>Art + type used</li>
-                            <li>Credit given</li>
-                        </ul>
-                    </div>
-                    <div class="ev-reward-card ev-bronze">
-                        <div class="ev-reward-place">🥉 3rd Place</div>
-                        <ul class="ev-list">
-                            <li>Idea becomes a card</li>
-                            <li>Possible Easter egg 👀</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ev-section" id="ev-sec-why">
-                <h3 class="ev-sec-title">💡 WHY JOIN?</h3>
-                <ul class="ev-list">
-                    <li>Get your artwork into a real game</li>
-                    <li>Be credited as an official creator</li>
-                    <li>Share your card with the community</li>
-                    <li>Help shape the future of orb</li>
-                </ul>
-
-                <h3 class="ev-sec-title" style="margin-top:28px;">🎯 WHAT WE'RE LOOKING FOR</h3>
-                <ul class="ev-list">
-                    <li>Creative, original designs</li>
-                    <li>Unique concepts and strong visual identity</li>
-                    <li>Interesting abilities and lore</li>
-                </ul>
-
-                <div class="ev-tip-box">
-                    ⚡ <strong>TIP:</strong> The more detailed and unique your card is, the higher your chances of winning.
-                </div>
-
-                <div style="text-align:center;margin-top:28px;">
-                    <a class="ev-submit-cta" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission">✉ Submit Your Art Now</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-<!-- END EVENT MODAL -->
-
 <div id="receipt-overlay">
     <div class="receipt-box glass-panel">
         <div class="receipt-header">EXCHANGE COMPLETE</div>
@@ -437,20 +266,20 @@
             <div class="swl-rim"></div>
             <!-- The actual spinning wheel (keep id for JS) -->
             <div class="wheel swl-wheel" id="lucky-wheel">
-                <div class="wheel-seg" style="--i:1;--clr:#c0392b;"><span>💰<br>50G</span></div>
-                <div class="wheel-seg" style="--i:2;--clr:#2471a3;"><span>📦<br>PACK</span></div>
-                <div class="wheel-seg" style="--i:3;--clr:#b7950b;"><span>💰<br>200G</span></div>
-                <div class="wheel-seg" style="--i:4;--clr:#7d3c98;"><span>⭐<br>EPIC</span></div>
-                <div class="wheel-seg" style="--i:5;--clr:#d35400;"><span>💰<br>100G</span></div>
-                <div class="wheel-seg" style="--i:6;--clr:#1e8449;"><span>📦<br>x2</span></div>
-                <div class="wheel-seg" style="--i:7;--clr:#1c2833;"><span>💰<br>10G</span></div>
-                <div class="wheel-seg" style="--i:8;--clr:#b8860b;"><span>👑<br>LEG!</span></div>
+                <div class="wheel-seg" style="--i:1;--clr:#ff2d55;"><span>💰<br>50G</span></div>
+                <div class="wheel-seg" style="--i:2;--clr:#0a84ff;"><span>📦<br>PACK</span></div>
+                <div class="wheel-seg" style="--i:3;--clr:#ff9f0a;"><span>💰<br>200G</span></div>
+                <div class="wheel-seg" style="--i:4;--clr:#bf5af2;"><span>⭐<br>EPIC</span></div>
+                <div class="wheel-seg" style="--i:5;--clr:#ff6b00;"><span>💰<br>100G</span></div>
+                <div class="wheel-seg" style="--i:6;--clr:#30d158;"><span>📦<br>x2</span></div>
+                <div class="wheel-seg" style="--i:7;--clr:#5e5ce6;"><span>💰<br>10G</span></div>
+                <div class="wheel-seg" style="--i:8;--clr:#ffd60a;"><span>👑<br>LEGENDARY!</span></div>
             </div>
             <!-- Center hub -->
             <div class="swl-hub">ORB</div>
         </div>
         <!-- Pointer arrow from right edge of visible half -->
-        <div class="swl-pointer">▶</div>
+        <div class="swl-pointer">◀</div>
     </div>
 
     <!-- RIGHT: panel -->
@@ -475,9 +304,21 @@
     <div class="settings-modal">
         <button class="settings-close" onclick="closeSettings()" aria-label="Close settings">✕</button>
         <h2>SETTINGS</h2>
-        <div class="settings-row"><span class="settings-row-label">Theme</span><div class="theme-toggle"><span class="theme-opt active" id="theme-dark" onclick="setTheme('dark')">Dark</span><span class="theme-opt" id="theme-light" onclick="setTheme('light')">Light</span></div></div>
+        <div class="settings-row">
+    <span class="settings-row-label">Color Mode</span>
+    <div class="theme-toggle">
+        <span class="theme-opt active" id="theme-dark" onclick="setTheme('dark')">Dark</span>
+        <span class="theme-opt" id="theme-light" onclick="setTheme('light')">Light</span>
+    </div>
+</div>
+<div class="settings-row">
+    <span class="settings-row-label">Style</span>
+    <div class="theme-toggle">
+        <span class="theme-opt active" id="style-classic" onclick="setStyle('classic')">Classic</span>
+        <span class="theme-opt" id="style-pika" onclick="setStyle('pika')" style="color:#FF0000;font-weight:900;">Pop!</span>
+    </div>
+</div>
         <div class="settings-row"><span class="settings-row-label">Sound</span><div class="theme-toggle"><span class="theme-opt active" id="sound-on" onclick="setSound(true)">On</span><span class="theme-opt" id="sound-off" onclick="setSound(false)">Off</span></div></div>
-        <div class="settings-row"><span class="settings-row-label">Frosted Header</span><div class="theme-toggle"><span class="theme-opt active" id="frost-on" onclick="setHeaderFrost(true,this)">On</span><span class="theme-opt" id="frost-off" onclick="setHeaderFrost(false,this)">Off</span></div></div>
         <div class="settings-section"><h3>Cloud Save</h3><p style="color:var(--text-muted);font-size:0.8rem;margin:0 0 10px;">Transfer progress between devices</p><button class="cloud-btn" onclick="exportSave()">Export Code</button><button class="cloud-btn" onclick="promptImport()">Import Code</button><textarea class="cloud-textarea" id="cloud-code-area" placeholder="Your save code appears here..." readonly></textarea><div class="cloud-status" id="cloud-status"></div></div>
         <div class="settings-section"><h3>Tutorial</h3><button class="cloud-btn" onclick="replayTutorial()">Restart Tutorial</button></div>
         <div class="settings-section"><h3>Delete Progress</h3><p style="color:var(--text-muted);font-size:0.8rem;margin:0 0 10px;">For testing purposes only</p><button class="cloud-btn" style="border-color:#e74c3c;color:#e74c3c;" onclick="confirmDeleteProgress()">Delete All Progress</button></div>
@@ -686,45 +527,54 @@
                     </div>
                 </div>
             </div>
-
-            <!-- SLIDE 2 -->
+<!-- SLIDE 2 — WINNERS -->
             <div class="hero-slide" data-slide="1">
-                <div class="hero2-banner" id="hero2-banner">
+                <div class="hero2-banner">
                     <div class="h2-bg"></div>
                     <div class="h2-overlay"></div>
                     <div class="h2-glow-edges"></div>
-                    <div class="h2-content">
-                        <div class="h2-live-badge">
-                            <span class="h2-live-dot"></span>
-                            LIVE EVENT
+                    <div class="h2-content h2-split">
+                        <!-- LEFT: text -->
+                        <div class="h2-left">
+                            <div class="h2-live-badge">
+                                <div class="h2-live-dot"></div>
+                                CREATE-A-CARD EVENT
+                            </div>
+                            <h2 class="h2-title">HERE ARE<br>THE WINNERS</h2>
+                            <p class="h2-subtitle">The community voted.<br>The legends are crowned.</p>
+                            <div class="hc-scroll-indicator" onclick="scrollHeroDown()" style="position:relative;bottom:auto;left:auto;transform:none;margin-top:24px;">
+                                <span>DISCOVER MORE</span>
+                                <div class="hc-arrow">▼</div>
+                            </div>
                         </div>
-                        <h2 class="h2-title glow-text">CREATE-A-CARD EVENT</h2>
-                        <p class="h2-subtitle">Design a card. Become part of the game.</p>
-                        <p class="h2-desc">Your creation could become an official orb card.<br>Submit your design and bring your legend to life.</p>
-                        <div class="h2-cd-phase" id="h2-cd-phase">STARTS IN</div>
-                        <div class="h2-countdown" id="h2-countdown">
-                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-days">00</span><span class="h2-cd-label">DAYS</span></div>
-                            <div class="h2-cd-sep">:</div>
-                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-hours">00</span><span class="h2-cd-label">HRS</span></div>
-                            <div class="h2-cd-sep">:</div>
-                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-mins">00</span><span class="h2-cd-label">MIN</span></div>
-                            <div class="h2-cd-sep">:</div>
-                            <div class="h2-cd-block"><span class="h2-cd-num" id="h2-cd-secs">00</span><span class="h2-cd-label">SEC</span></div>
+                        <!-- RIGHT: podium -->
+                        <div class="h2-right">
+                            <div class="h2-podium">
+                                <div class="h2-pod-slot h2-p2">
+                                    <div class="h2-pod-img" style="background-image:url('cards/Centaur.jpg')"></div>
+                                    <div class="h2-pod-medal">🥈</div>
+                                    <div class="h2-pod-name">Centaur</div>
+                                    <div class="h2-pod-stand h2-stand-2">2</div>
+                                </div>
+                                <div class="h2-pod-slot h2-p1">
+                                    <div class="h2-pod-crown">👑</div>
+                                    <div class="h2-pod-img h2-pod-feat" style="background-image:url('cards/Quetzalcoatlus.jpg')"></div>
+                                    <div class="h2-pod-medal">🥇</div>
+                                    <div class="h2-pod-name">Quetzalcoatlus</div>
+                                    <div class="h2-pod-stand h2-stand-1">1</div>
+                                </div>
+                                <div class="h2-pod-slot h2-p3">
+                                    <div class="h2-pod-img" style="background-image:url('assets/card_back.png')"></div>
+                                    <div class="h2-pod-medal">🥉</div>
+                                    <div class="h2-pod-name">Nxflower</div>
+                                    <div class="h2-pod-sub">Art coming soon</div>
+                                    <div class="h2-pod-stand h2-stand-3">3</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="h2-buttons">
-                            <a class="h2-btn h2-btn-primary" href="mailto:cards2.0.tcg@gmail.com?subject=Create-A-Card%20Submission">✉ Submit Your Art</a>
-                            <button class="h2-btn h2-btn-secondary" onclick="openEventModal()">Learn More</button>
-                        </div>
-                        <div class="h2-urgency">⏳ Ends June 1 — Limited time event</div>
-                    </div>
-
-                    <div class="hc-scroll-indicator" onclick="scrollHeroDown()">
-                        <span>DISCOVER MORE</span>
-                        <div class="hc-arrow">▼</div>
                     </div>
                 </div>
             </div>
-
             <!-- HERO ROTATOR CONTROLS -->
             <div class="hero-controls">
                 <button class="hero-nav-arrow" id="hero-prev" onclick="prevHeroSlide()">❮</button>
@@ -827,20 +677,20 @@
                 <div class="section-title-rule"></div>
             </div>
             <div class="news-grid">
-                <div class="news-card glass-panel" onclick="openNews('bat')">
-                    <span class="news-date">March 27, 2026</span>
-                    <h3 class="news-headline">Phantom Type Bat Revealed</h3>
-                    <p class="news-body">Silent, fast, and vicious. The Bat strikes before opponents can react...<br><span class="news-rm">READ MORE ›</span></p>
+                <div class="news-card glass-panel" onclick="openNews('multiplayer')">
+                    <span class="news-date">July 1, 2026</span>
+                    <h3 class="news-headline">Multiplayer PvP Arena is LIVE</h3>
+                    <p class="news-body">Battle real players in real time. Create a room, share the code, fight...<br><span class="news-rm">READ MORE ›</span></p>
                 </div>
-                <div class="news-card glass-panel" onclick="openNews('arena2')">
-                    <span class="news-date">March 27, 2026</span>
-                    <h3 class="news-headline">New Arena Themes</h3>
-                    <p class="news-body">Customize your combat layout with visually stunning dynamic backgrounds...<br><span class="news-rm">READ MORE ›</span></p>
+                <div class="news-card glass-panel" onclick="openNews('winners')">
+                    <span class="news-date">June 28, 2026</span>
+                    <h3 class="news-headline">Create-a-Card Winners Revealed</h3>
+                    <p class="news-body">Quetzalcoatlus takes 1st. Centaur takes 2nd. Nxflower takes 3rd...<br><span class="news-rm">READ MORE ›</span></p>
                 </div>
                 <div class="news-card glass-panel" onclick="openNews('update')">
-                    <span class="news-date">March 27, 2026</span>
-                    <h3 class="news-headline">The Mega Update Details</h3>
-                    <p class="news-body">Battle emotes, new lore systems, a lucky wheel and a pity drops system...<br><span class="news-rm">READ MORE ›</span></p>
+                    <span class="news-date">June 15, 2026</span>
+                    <h3 class="news-headline">Lucky Wheel, Avatars & Big Update</h3>
+                    <p class="news-body">Stumble Guys-style lucky wheel, Skribbl.io avatars, draw phase in battles...<br><span class="news-rm">READ MORE ›</span></p>
                 </div>
             </div>
         </div>
@@ -929,12 +779,6 @@
             <button id="gallery-sell-btn" class="sell-btn" onclick="sellDuplicates()">SELL EXTRAS</button>
         </div>
         <div id="gallery-grid-container" class="gallery-grid"></div>
-        <div id="museum-wall" class="museum-wall">
-            <button class="museum-arrow museum-arrow-left" id="museum-arrow-left" onclick="museumNav(-1)">‹</button>
-            <div class="museum-carousel" id="museum-carousel"></div>
-            <button class="museum-arrow museum-arrow-right" id="museum-arrow-right" onclick="museumNav(1)">›</button>
-        </div>
-        <div class="museum-hint" id="museum-hint">Press <kbd>Shift+M</kbd> for Museum Mode</div>
         <footer class="site-footer">© 2026 <span>orb</span> — All rights reserved.</footer>
     </section>
 
@@ -1003,7 +847,7 @@
             <div class="board-center" id="board-center">
                 <div class="arena-ambient"></div>
                 <button class="mobile-deck-btn" onclick="openMobileDrawer()">📋 DECK</button>
-                <div class="coin-pouch">💰 <span id="coin-display">1000</span></div>
+                <div class="coin-pouch"><img src="assets/coin-head.png" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'"> <span id="coin-display">1000</span></div>
                 <div class="daily-float-btn" id="daily-float-btn" onclick="openDailyReward()">DAILY</div>
                 <div class="instruction-text" id="instruction">OPEN PACKS TO BUILD YOUR DECK</div>
                 <div id="pack-area"></div>

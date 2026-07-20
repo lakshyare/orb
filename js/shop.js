@@ -297,3 +297,21 @@ var index = Math.min(
 
 msg.innerHTML = fakeShopMessages[index];
 }
+
+/* ===== SHOP TEXT AUTO-RECYCLE (every 2 hrs) ===== */
+var SHOP_RECYCLE_MS = 2 * 60 * 60 * 1000;
+
+function initShopRecycle(){
+    var msg=document.getElementById('shop-message');
+    if(!msg)return;
+    var last=parseInt(localStorage.getItem('cards_shop_msg_ts')||'0');
+    var idx=parseInt(localStorage.getItem('cards_shop_msg_idx')||'0');
+    var now=Date.now();
+    if(!last||now-last>=SHOP_RECYCLE_MS){
+        idx=(idx+1)%fakeShopMessages.length;
+        localStorage.setItem('cards_shop_msg_ts',String(now));
+        localStorage.setItem('cards_shop_msg_idx',String(idx));
+    }
+    msg.innerHTML=fakeShopMessages[idx];
+    fakeShopClicks=idx+1;
+}

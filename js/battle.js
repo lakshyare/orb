@@ -693,7 +693,7 @@ function showGameOver(won,gold,xp){
         '<div style="text-align:center;margin:15px 0;"><span style="background:#1a2a1a;border:1px solid #2ecc71;color:#2ecc71;padding:6px 18px;border-radius:20px;font-weight:bold;">+'+xp+' XP | LVL '+playerProfile.level+'</span></div>'+
         lootH+lostH+
         '<div class="go-action-row" style="flex-wrap:wrap; gap:10px; justify-content:center;">'+
-            '<button class="modal-btn" onclick="closeGameOver()">RETURN</button>'+
+        '<button class="modal-btn" onclick="closeGameOver()">RETURN</button>'+
             (battleState.history && battleState.history.length > 0 ? '<button class="modal-btn" style="background:#8e44ad;box-shadow:0 0 15px rgba(142,68,173,0.5);" onclick="replayBattle()">REPLAY BATTLE</button>' : '') +
             '<button class="modal-btn" style="background:linear-gradient(to bottom,#27ae60,#229954);" onclick="closeGameOver();openFightModal();">PLAY AGAIN</button>'+
         '</div>';
@@ -1007,3 +1007,52 @@ function showPostMatchBreakdown(history, playerWon, difficulty){
 }
 function closeBreakdown(){var ov=document.getElementById('trade-overlay');if(ov)ov.style.display='none';}
 
+/* ===== BATTLE REPLAY ===== */
+function replayBattle(){
+    var history=battleState.history;
+    if(!history||!history.length)return;
+
+    var ov=document.createElement('div');
+    ov.id='replay-overlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:25000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;';
+
+    var idx=0;
+    var speed=1800; /* ms per round */
+
+    function buildFrame(round){
+        var h=history[round];
+        if(!h)return;
+        var won=h.winner==='player';
+        var draw=h.winner==='draw';
+        ov.innerHTML=
+            '<div style="font-family:Cinzel,serif;font-size:0.75rem;letter-spacing:3px;color:var(--brand-gold);margin-bottom:12px;">REPLAY — ROUND '+(round+1)+' / '+history.length+'</div>'+
+            '<div style="display:flex;align-items:center;gap:50px;margin-bottom:16px;">'+
+                '<div style="text-align:center;">'+
+                    '<div style="font-size:0.6rem;color:#888;letter-spacing:2px;margin-bottom:6px;">YOU</div>'+
+                    '<div style="width:120px;height:175px;border-radius:10px;background:center/cover url(\''+h.pC.img+'\');border:2px solid '+(h.pC.rarity==='legendary'?'#ffd700':h.pC.rarity==='epic'?'#b338ff':'#555')+';box-shadow:0 8px 24px rgba(0,0,0,0.6);"></div>'+
+                    '<div style="margin-top:8px;font-weight:900;color:#fff;font-size:0.82rem;">'+h.pC.name+'</div>'+
+                    '<div style="color:'+(h.stat==='dmg'?'#e74c3c':'#2ecc71')+';font-size:1.4rem;font-weight:900;margin-top:4px;">'+(h.stat==='dmg'?'⚔':'♥')+' '+h.pS+'</div>'+
+                '</div>'+
+                '<div style="font-family:Cinzel,serif;font-size:2rem;font-weight:900;color:'+(draw?'var(--brand-gold)':won?'#2ecc71':'#e74c3c')+';">'+
+                    (draw?'DRAW':won?'WIN':'LOSE')+
+                '</div>'+
+                '<div style="text-align:center;">'+
+                    '<div style="font-size:0.6rem;color:#888;letter-spacing:2px;margin-bottom:6px;">BOT</div>'+
+                    '<div style="width:120px;height:175px;border-radius:10px;background:center/cover url(\''+h.bC.img+'\');border:2px solid '+(h.bC.rarity==='legendary'?'#ffd700':h.bC.rarity==='epic'?'#b338ff':'#555')+';box-shadow:0 8px 24px rgba(0,0,0,0.6);"></div>'+
+                    '<div style="margin-top:8px;font-weight:900;color:#fff;font-size:0.82rem;">'+h.bC.name+'</div>'+
+                    '<div style="color:'+(h.stat==='dmg'?'#e74c3c':'#2ecc71')+';font-size:1.4rem;font-weight:900;margin-top:4px;">'+(h.stat==='dmg'?'⚔':'♥')+' '+h.bS+'</div>'+
+                '</div>'+
+            '</div>'+
+            '<div style="display:flex;gap:8px;margin-top:8px;">'+
+                (round>0?'<button onclick="replayJump('+(round-1)+')" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:0.8rem;">← PREV</button>':'')+
+                (round<history.length-1?'<button onclick="replayJump('+(round+1)+')" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:0.8rem;">NEXT →</button>':'')+
+                '<button onclick="document.getElementById(\'replay-overlay\').remove()" style="background:#e74c3c;border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:900;">CLOSE</button>'+
+            '</div>'+
+            '<div style="margin-top:16px;width:280px;height:4px;background:#333;border-radius:2px;overflow:hidden;"><div style="height:100%;width:'+((round+1)/history.length*100)+'%;background:var(--brand-main-gradient);border-radius:2px;transition:width 0.4s;"></div></div>';
+    }
+
+    window.replayJump=function(n){idx=n;buildFrame(idx);};
+    buildFrame(0);
+    document.body.appendChild(ov);
+    ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+}

@@ -145,6 +145,19 @@ function _mpScreenLobby(body,data){
         {v:'epics',l:'Epics Only'},
         {v:'commons',l:'Commons Only'}
     ];
+
+    function playerCard(p,role){
+        if(!p) return '<div class="mp-player-card"><div class="mp-player-role">'+role+'</div><div class="mp-player-name" style="color:#555;">Waiting...</div><div class="mp-ready-dot"></div><div class="mp-ready-label">Not joined</div></div>';
+        var avatar=p.avatarUrl?'<div style="width:48px;height:48px;border-radius:50%;background:center/cover url(\''+p.avatarUrl+'\') no-repeat;border:2px solid var(--brand-gold);margin:0 auto 8px;flex-shrink:0;"></div>':'<div style="width:48px;height:48px;border-radius:50%;background:var(--bg-tertiary);border:2px solid var(--border-primary);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">👤</div>';
+        return '<div class="mp-player-card">'+
+            '<div class="mp-player-role">'+role+'</div>'+
+            avatar+
+            '<div class="mp-player-name">'+p.name+'</div>'+
+            '<div class="mp-ready-dot '+(p.ready?'ready':'')+'" ></div>'+
+            '<div class="mp-ready-label">'+(p.ready?'✓ READY':'Setting up...')+'</div>'+
+        '</div>';
+    }
+
     body.innerHTML=
         '<div class="mp-room-head">'+
             '<div class="mp-code-block">'+
@@ -154,33 +167,25 @@ function _mpScreenLobby(body,data){
             '</div>'+
         '</div>'+
         '<div class="mp-players">'+
-            '<div class="mp-player-card">'+
-                '<div class="mp-player-role">HOST</div>'+
-                '<div class="mp-player-name">'+host.name+'</div>'+
-                '<div class="mp-ready-dot '+(host.ready?'ready':'')+'" id="mp-host-dot"></div>'+
-                '<div class="mp-ready-label" id="mp-host-lbl">'+(host.ready?'✓ READY':'Setting up...')+'</div>'+
-            '</div>'+
+            playerCard(host,'HOST')+
             '<div class="mp-vs-orb">VS</div>'+
-            '<div class="mp-player-card">'+
-                '<div class="mp-player-role">CHALLENGER</div>'+
-                '<div class="mp-player-name" id="mp-guest-name">'+(guest?guest.name:'Waiting...')+'</div>'+
-                '<div class="mp-ready-dot '+(guest&&guest.ready?'ready':'')+'" id="mp-guest-dot"></div>'+
-                '<div class="mp-ready-label" id="mp-guest-lbl">'+(guest?(guest.ready?'✓ READY':'Setting up...'):'Not joined')+'</div>'+
-            '</div>'+
+            playerCard(guest,'CHALLENGER')+
         '</div>'+
         (isHost?
             '<div class="mp-settings">'+
-                '<div class="mp-setting-row"><span class="mp-setting-lbl">Deck Mode</span>'+
-                '<select class="mp-setting-sel" onchange="mpSetSetting(\'deckMode\',this.value)">'+
-                modeOpts.map(function(o){return '<option value="'+o.v+'"'+(settings.deckMode===o.v?' selected':'')+'>'+o.l+'</option>';}).join('')+
-                '</select></div>'+
-                '<div class="mp-setting-row"><span class="mp-setting-lbl">Turn Timer</span>'+
-                '<select class="mp-setting-sel" onchange="mpSetSetting(\'timer\',+this.value)">'+
-                '<option value="10">10s</option><option value="15"'+(settings.timer===15?' selected':'')+'>15s</option>'+
-                '<option value="20"'+(settings.timer===20?' selected':'')+'>20s</option>'+
-                '<option value="0"'+(settings.timer===0?' selected':'')+'>No limit</option>'+
-                '</select></div>'+
-            '</div>'
+    '<div class="mp-setting-lbl" style="margin-bottom:8px;">DECK MODE</div>'+
+    '<div class="mp-mode-pills">'+
+    modeOpts.map(function(o){
+        return '<button class="mp-mode-pill'+(settings.deckMode===o.v?' active':'')+'" onclick="mpSetSetting(\'deckMode\',\''+o.v+'\')">'+o.l+'</button>';
+    }).join('')+
+    '</div>'+
+    '<div class="mp-setting-lbl" style="margin:14px 0 8px;">TURN TIMER</div>'+
+    '<div class="mp-mode-pills">'+
+    [{v:'10',l:'10s'},{v:'15',l:'15s'},{v:'20',l:'20s'},{v:'0',l:'None'}].map(function(o){
+        return '<button class="mp-mode-pill'+(String(settings.timer)===o.v?' active':'')+'" onclick="mpSetSetting(\'timer\','+o.v+')">'+o.l+'</button>';
+    }).join('')+
+    '</div>'+
+'</div>'
         :
             '<div class="mp-settings">'+
                 '<div class="mp-setting-info">Mode: <strong>'+(modeOpts.find(function(o){return o.v===settings.deckMode;})||{l:'—'}).l+'</strong></div>'+
@@ -204,7 +209,7 @@ async function mpCreateRoom(){
     var roomData={
         code:code,
         settings:{deckMode:'own',timer:10},
-        host:{id:mpGetId(),name:mpGetName(),deck:myDeck.slice(),ready:false},
+        host:{id:mpGetId(),name:mpGetName(),deck:myDeck.slice(),ready:false,avatarUrl:playerProfile._avatarDataUrl||null},
         guest:null,
         state:{phase:'lobby'}
     };
@@ -227,7 +232,7 @@ async function mpDoJoin(){
     if(data.guest){mpScreen('join');document.getElementById('mp-join-err').innerText='Room is full.';return;}
     if(data.state&&data.state.phase!=='lobby'){mpScreen('join');document.getElementById('mp-join-err').innerText='Game already started.';return;}
     var guestDeck=mpBuildDeck(data.settings?data.settings.deckMode:'own',data.host?data.host.deck:null);
-    var ok=await mpUpdateRoom(code,{guest:{id:mpGetId(),name:mpGetName(),deck:guestDeck,ready:false}});
+    var ok=await mpUpdateRoom(code,{guest:{id:mpGetId(),name:mpGetName(),deck:guestDeck,ready:false,avatarUrl:playerProfile._avatarDataUrl||null}});
     if(!ok){mpScreen('main');showToast('Failed to join','error');return;}
     mpState.active=true; mpState.role='guest'; mpState.roomCode=code;
     mpState.settings=data.settings||{};
@@ -296,13 +301,40 @@ function mpHandleUpdate(data){
         _mpShowGameOver(data);
     }
 }
-
 function _mpCheckBothReady(data){
     if(!data.host||!data.guest||!data.host.ready||!data.guest.ready) return;
     if(mpState.role!=='host') return;
     var st=document.getElementById('mp-lobby-status');
     if(st)st.innerText='Both ready! Starting...';
-    setTimeout(function(){_mpStartGame(data);},1000);
+    /* Show quick coin flip visual then start */
+    _mpShowCoinFlipThenStart(data);
+}
+
+function _mpShowCoinFlipThenStart(data){
+    var ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:20000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+    ov.innerHTML=
+        '<div style="font-family:Cinzel,serif;font-size:1.4rem;font-weight:900;color:var(--brand-gold);letter-spacing:4px;">BATTLE STARTING</div>'+
+        '<div style="perspective:600px;width:100px;height:100px;">'+
+            '<div id="mp-coin" style="width:100px;height:100px;position:relative;transform-style:preserve-3d;animation:mpCoinSpin 1s linear 2 forwards;">'+
+                '<div style="position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;overflow:hidden;background:#1a1208;box-shadow:inset 0 2px 6px rgba(255,255,255,0.15),0 8px 28px rgba(0,0,0,0.7);">'+
+                    '<img src="assets/coin-head.png" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentNode.innerHTML=\'⚔\'">'+
+                '</div>'+
+                '<div style="position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;transform:rotateY(180deg);overflow:hidden;background:#1a1208;box-shadow:inset 0 2px 6px rgba(255,255,255,0.15),0 8px 28px rgba(0,0,0,0.7);">'+
+                    '<img src="assets/coin-tail.png" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentNode.innerHTML=\'👑\'">'+
+                '</div>'+
+            '</div>'+
+        '</div>'+
+        '<div style="color:#888;font-size:0.9rem;">Preparing battle...</div>';
+    /* Add spin keyframe inline */
+    var style=document.createElement('style');
+    style.innerText='@keyframes mpCoinSpin{to{transform:rotateY(720deg);}}';
+    ov.appendChild(style);
+    document.body.appendChild(ov);
+    setTimeout(function(){
+        if(ov.parentNode)ov.remove();
+        _mpStartGame(data);
+    },2200);
 }
 
 /* ════════════════════════════════════════
@@ -315,14 +347,15 @@ async function _mpStartGame(data){
     if(settings.deckMode==='mirror') guestDeck=hostDeck.slice();
     var hPile=shuffleArray(hostDeck.slice()), gPile=shuffleArray(guestDeck.slice());
     var max=Math.min(hPile.length,gPile.length);
-    var hHand=[hPile.shift()], gHand=[gPile.shift()];
+    /* Start with empty hands — players draw first */
     await mpUpdateRoom(mpState.roomCode,{state:{
         phase:'playing', round:1, maxRounds:max,
         scores:{host:0,guest:0}, statTurn:'host',
         hostPile:hPile, guestPile:gPile,
-        hostHand:hHand, guestHand:gHand,
+        hostHand:[], guestHand:[],
         hostPlayed:null, guestPlayed:null,
-        stat:null, roundPhase:'play', lastResult:null,
+        hostDrawn:false, guestDrawn:false,
+        stat:null, roundPhase:'draw', lastResult:null,
         deadline:Date.now()+(settings.timer>0?settings.timer*1000:999999)
     }});
 }
@@ -354,28 +387,50 @@ function _mpRenderGame(data){
     var thHand=(amHost?gs.guestHand:gs.hostHand)||[];
     var myPlayed=amHost?gs.hostPlayed:gs.guestPlayed;
     var thPlayed=amHost?gs.guestPlayed:gs.hostPlayed;
+    var myDrawn=amHost?gs.hostDrawn:gs.guestDrawn;
     var rp=gs.roundPhase;
     if(gs.deadline&&mpState.settings.timer>0) _mpRunTimer(gs.deadline);
-    /* Opponent hand */
+
+    /* Opponent hand count */
     var bh=document.getElementById('bot-hand-display'); bh.innerHTML='';
     for(var i=0;i<thHand.length;i++){var m=document.createElement('div');m.className='bot-mini-card';bh.appendChild(m);}
+
     /* Draw pile */
-    var dp=document.getElementById('draw-pile'); dp.innerHTML=''; dp.onclick=null; dp.classList.remove('must-draw');
-    for(var j=0;j<Math.min(myPile.length,5);j++){var pc=document.createElement('div');pc.className='pile-card';pc.style.top=-(j*3)+'px';pc.style.left=j+'px';dp.appendChild(pc);}
+    var dp=document.getElementById('draw-pile');
+    dp.innerHTML=''; dp.onclick=null; dp.classList.remove('must-draw');
+    for(var j=0;j<Math.min(myPile.length,5);j++){
+        var pc=document.createElement('div');pc.className='pile-card';
+        pc.style.top=-(j*3)+'px';pc.style.left=j+'px';dp.appendChild(pc);
+    }
     document.getElementById('pile-count').innerText=myPile.length;
+
     /* Slots */
     var ps=document.getElementById('player-battle-slot'), bs=document.getElementById('bot-battle-slot');
-    ps.innerHTML='<span class="slot-label">YOU</span>'; bs.innerHTML='<span class="slot-label">'+(opp?opp.name:'OPP')+'</span>';
+    ps.innerHTML='<span class="slot-label">YOU</span>';
+    bs.innerHTML='<span class="slot-label">'+(opp?opp.name:'OPP')+'</span>';
     ps.classList.remove('has-card'); bs.classList.remove('has-card');
     if(myPlayed){var mc=allCards.find(function(c){return c.id===myPlayed;});if(mc){ps.appendChild(createBattleCard(mc,false));ps.classList.add('has-card');}}
     if(thPlayed){var tc=allCards.find(function(c){return c.id===thPlayed;});if(tc){bs.appendChild(createBattleCard(tc,rp!=='result'));bs.classList.add('has-card');}}
+
     /* Phase indicator */
     var phEl=document.getElementById('phase-indicator');
     if(!phEl){phEl=document.createElement('div');phEl.id='phase-indicator';phEl.className='phase-indicator';document.querySelector('.battle-field').appendChild(phEl);}
     var atkBtn=document.getElementById('atk-btn'), defBtn=document.getElementById('def-btn');
     atkBtn.style.display='none'; defBtn.style.display='none';
     atkBtn.onclick=function(){_mpPickStat('dmg');}; defBtn.onclick=function(){_mpPickStat('hp');};
-    if(rp==='play'){
+
+    /* Draw phase */
+    if(rp==='draw'){
+        phEl.className='phase-indicator draw-phase';
+        if(myDrawn){
+            phEl.innerText='Waiting for opponent to draw...';
+        } else {
+            phEl.innerText='DRAW A CARD [CLICK PILE]';
+            dp.classList.add('must-draw');
+            dp.onclick=function(){ _mpDraw(); };
+        }
+        _mpRenderHand(myHand,false);
+    } else if(rp==='play'){
         phEl.className='phase-indicator play-phase';
         phEl.innerText=myPlayed?'Waiting for opponent...':'PICK A CARD';
         _mpRenderHand(myHand,!myPlayed);
@@ -390,6 +445,37 @@ function _mpRenderGame(data){
         _mpRenderHand(myHand,false);
         _mpShowRoundResult(gs,amHost,data);
     }
+}
+
+async function _mpDraw(){
+    var code=mpState.roomCode; if(!code)return;
+    var data=await mpGetRoom(code); if(!data)return;
+    var gs=data.state; if(!gs||gs.roundPhase!=='draw')return;
+    var amHost=mpState.role==='host';
+    var pileKey=amHost?'hostPile':'guestPile';
+    var handKey=amHost?'hostHand':'guestHand';
+    var drawnKey=amHost?'hostDrawn':'guestDrawn';
+    if(gs[drawnKey])return; /* already drew */
+
+    var pile=(gs[pileKey]||[]).slice();
+    var hand=(gs[handKey]||[]).slice();
+    if(pile.length){hand.push(pile.shift());}
+
+    var newState=Object.assign({},gs);
+    newState[pileKey]=pile;
+    newState[handKey]=hand;
+    newState[drawnKey]=true;
+
+    /* If both have drawn, advance to play */
+    var otherDrawnKey=amHost?'guestDrawn':'hostDrawn';
+    if(gs[otherDrawnKey]){
+        newState.roundPhase='play';
+        newState.hostDrawn=false;
+        newState.guestDrawn=false;
+        newState.deadline=Date.now()+_mpTimerMs();
+    }
+
+    await mpSB().from('pvp_rooms').update({state:newState}).eq('code',code);
 }
 
 function _mpRenderHand(hand,interactive){
@@ -484,15 +570,15 @@ async function _mpAdvanceRound(gs,data){
     var hHand=(gs.hostHand||[]).filter(function(id){return id!==gs.hostPlayed;});
     var gHand=(gs.guestHand||[]).filter(function(id){return id!==gs.guestPlayed;});
     var hPile=(gs.hostPile||[]).slice(), gPile=(gs.guestPile||[]).slice();
-    if(hPile.length)hHand.push(hPile.shift());
-    if(gPile.length)gHand.push(gPile.shift());
     var newState=Object.assign({},gs,{
         round:next, statTurn:gs.statTurn==='host'?'guest':'host',
         hostPile:hPile, guestPile:gPile,
         hostHand:hHand, guestHand:gHand,
         hostPlayed:null, guestPlayed:null,
+        hostDrawn:false, guestDrawn:false,
         stat:null, lastResult:null,
-        roundPhase:'play', deadline:Date.now()+_mpTimerMs()
+        roundPhase:'draw',
+        deadline:Date.now()+_mpTimerMs()
     });
     await mpSB().from('pvp_rooms').update({state:newState}).eq('code',mpState.roomCode);
 }
